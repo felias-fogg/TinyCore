@@ -1,11 +1,11 @@
-# ATTinyCore **Universal**
+# TinyCore
 Arduino support for almost every classic tinyAVR device! Supports ATtiny 1634, 2313/4313, 24/44/84, 441/841, 25/45/85, 261/461/861, 87/167, 48/88, 43, 26 and 828.
 
-Supports programming via ISP, Serial (Optiboot) or VUSB (Micronucleus)
-## [Check it out, we have "discussions" now!](https://github.com/SpenceKonde/ATTinyCore/discussions)
-Let's use that, not gitter.
+TinyCore is a fork of the [ATTinyCore 2.0.0 branch](https://github.com/SpenceKonde/ATTinyCore). This fork focuses on improving the overall user experience and other quality-of-life improvements such as:
+* Less clutter and confusing options in the Arduino IDE Tools menu
+* Rock-solid bootloader support using [Urboot](https://github.com/stefanrueger/urboot) in favour of Optiboot
+* Hardware debugging support using [PyAvrOCD](https://pyavrocd.io)
 
-## ATTinyCore 2.0.0 is available for public test. Things that don't work should be reported
 
 ## ATTinyCore 2.0.0 - lots of changes, some of them big, a few of them may cause breakage
 I cobbled ATTinyCore together with far less experience than I have now (indeed, I'd barely covered the basics when I started trying to get a working ATtiny841 core). I like to think I have a much better idea of how a core should be designed now. But this meant some terrible decisions were made in the past. Decisions that we have been paying the price for ever since. I decided that the core should be advanced to a state where the bad decisions have been fixed, and everything that needs to be exposed on the parts is exposed in a consistent manner (too much was done incrementally, and not enough planning was done, ever). This core should not expect any significant new feature enhancements from here on out. The new feature development will be for megaTinyCore and DxCore, as those represent the future of the AVR architecture. Bug fixes will still be made.
