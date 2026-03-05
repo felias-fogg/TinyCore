@@ -1,178 +1,90 @@
-/* This code is very long and very confusing. It was making it very difficult to work with
- * wiring.c, so it was moved into a .inc file that gets included in wiring.c unless millis
- * is disabled */
+#include <avr/interrupt.h>
+#include "wiring_private.h"
 
 
-// the prescaler is set so that the millis timer ticks every MillisTimer_Prescale_Value (64) clock cycles, and the
-// the overflow handler is called every 256 ticks.
-#if 0 // generally valid scaling formula follows below in the #else branch
-  #if (F_CPU==12800000)
-  //#define MICROSECONDS_PER_MILLIS_OVERFLOW (clockCyclesToMicroseconds(MillisTimer_Prescale_Value * 256))
-  //#define MICROSECONDS_PER_MILLIS_OVERFLOW ((64 * 256)/12.8) = 256*(64/12.8) = 256*5 = 1280
-  #define MICROSECONDS_PER_MILLIS_OVERFLOW (1280)
-  #elif (F_CPU==16500000)
-  #define MICROSECONDS_PER_MILLIS_OVERFLOW (992)
-  #else
-  #define MICROSECONDS_PER_MILLIS_OVERFLOW (clockCyclesToMicroseconds(MillisTimer_Prescale_Value * 256))
-  #endif
-#else
-/* The key is never to compute (F_CPU / 1000000L), which may lose precision.
-   The formula below is correct for all F_CPU times that evenly divide by 10,
-   at least for prescaler values up and including 64 as used in this file. */
-  #if MillisTimer_Prescale_Value <= 64 | (MillisTimer_Prescale_Value == 128 && F_CPU <= 20000000UL)
-    #define MICROSECONDS_PER_MILLIS_OVERFLOW \
-  (MillisTimer_Prescale_Value * 256UL * 1000UL * 100UL / ((F_CPU + 5UL) / 10UL))
-  #else
-/* It may be sufficient to swap the 100L and 10L in the above formula, but
-   please double-check EXACT_NUMERATOR and EXACT_DENOMINATOR below as well
-   and make sure it does not roll over. */
-    #define MICROSECONDS_PER_MILLIS_OVERFLOW 0
-    #error "Please adjust MICROSECONDS_PER_MILLIS_OVERFLOW formula"
-  #endif
-#endif
+#define MILLIS_ENABLED
+#define MICROS_ENABLED
 
-/* Correct millis to zero long term drift
-   --------------------------------------
+// The trick here is to move everything millis/micros related to aseparate file so it can be
+// optimized away if millis() or micros() is nu used in the user application.
+// And if millis() or micros() is present in the user application,
+// init_millis() is actually ran _before_ main()!
+void init_millis(void) __attribute__ ((naked)) __attribute__ ((used)) __attribute__ ((section (".init6")));
 
-   When MICROSECONDS_PER_MILLIS_OVERFLOW >> 3 is exact, we do nothing.
-   In this case, millis() has zero long-term drift, that is,
-   it precisely follows the oscillator used for timing.
+/*
+  // In case the bootloader left our millis timer in a bad way
+  there had been some very dubious code here that reinitialized registers.
+  ATTinyCore does not include any bootloaders that mess with timers without ensuring that they are reset.
+  so this code has been removed.
+*/
 
-   When it has a fractional part that leads to an error when ignored,
-   we apply a correction.  This correction yields a drift of 30 ppm or less:
-   1e6 / (512 * (minimum_MICROSECONDS_PER_MILLIS_OVERFLOW >> 3)) <= 30.
-
-   The mathematics of the correction are coded in the preprocessor and
-   produce compile-time constants that do not affect size or run time.
+/* Okay, timer registers:
+ * It is arguable whether it's actually better to check for these - the way we're doing it in these files,
+ * we are often not checking for features, but specific families of parts handled case-by-case, and there
+ * will never be new classic AVRs released.... so why not just test for part families when that's what we're doing?
+ *
+ * TCCR1E is only on x61.
+ * TCCR1D is only on x7 and x61.
+ * The x7 has weird things about all it's timers. TC0 is strange, and TC1 has this crazy output mux.
+ * The timers on the x61 are MUCH wierder. So both of those need special handling, which is kind of a rook.
+ * Gotta jump through hoops like you were a circus animal just to get an 'x7 to give you just three channels at the
+ * same frequency....
+ *
+ * TCCR1 is only on x5
+ *
+ * All non-85 have TCCR1A.
+ *
+ * Check for COM0xn bits to know if TIMER0 has PWM (it doesn't on x61 - it's a weird timer there - can be 16-bit,
+ * and has output compare units that just generate interrupts. General freakshow like everything else on those parts.
+ * And it doesn't on an x8 'cause Atmel cheaped out).
  */
-
-/* We cancel a factor of 10 in the ratio MICROSECONDS_PER_MILLIS_OVERFLOW
-   and divide the numerator by 8.  The calculation fits into a long int
-   and produces the same right shift by 3 as the original code.
- */
-#define EXACT_NUMERATOR (MillisTimer_Prescale_Value * 256UL * 12500UL)
-#define EXACT_DENOMINATOR ((F_CPU + 5UL) / 10UL)
-
-/* The remainder is an integer in the range [0, EXACT_DENOMINATOR). */
-#define EXACT_REMAINDER (EXACT_NUMERATOR - (EXACT_NUMERATOR / EXACT_DENOMINATOR) * EXACT_DENOMINATOR)
-
-/* If the remainder is zero, MICROSECONDS_PER_MILLIS_OVERFLOW is exact.
-
-   Otherwise we compute the fractional part and approximate it by the closest
-   rational number n / 256.  Effectively, we increase millis accuracy by 512x.
-
-   We compute n by scaling down the remainder to the range [0, 256].
-   The two extreme cases 0 and 256 require only trivial correction.
-   All others are handled by an unsigned char counter in millis().
- */
-#define CORRECT_FRACT_PLUSONE // possibly needed for high/cheap corner case
-#if EXACT_REMAINDER > 0
-  #define CORRECT_EXACT_MILLIS // enable zero drift correction in millis()
-  #define CORRECT_EXACT_MICROS // enable zero drift correction in micros()
-  #define CORRECT_EXACT_MANY ((2U * 256U * EXACT_REMAINDER + EXACT_DENOMINATOR) / (2U * EXACT_DENOMINATOR))
-  #if CORRECT_EXACT_MANY < 0 || CORRECT_EXACT_MANY > 256
-    #error "Miscalculation in millis() exactness correction"
-  #endif
-  #if CORRECT_EXACT_MANY == 0 // low/cheap corner case
-    #undef CORRECT_EXACT_MILLIS // go back to nothing for millis only
-  #elif CORRECT_EXACT_MANY == 256 // high/cheap corner case
-    #undef CORRECT_EXACT_MILLIS // go back to nothing for millis only
-    #undef CORRECT_FRACT_PLUSONE // but use this macro...
-    #define CORRECT_FRACT_PLUSONE + 1 // ...to add 1 more to fract every time
-  #endif // cheap corner cases
-#endif // EXACT_REMAINDER > 0
-/* End of preparations for exact millis() with oddball frequencies */
-
-/* More preparations to optimize calculation of exact micros().
-   The idea is to reduce microseconds per overflow to unsigned char.
-   Then we find the leading one-bits to add, avoiding multiplication.
-
-   This way of calculating micros is currently enabled whenever
-   *both* the millis() exactness correction is enabled
-   *and* MICROSECONDS_PER_MILLIS_OVERFLOW < 65536.
-   Otherwise we fall back to the existing micros().
- */
-#ifdef CORRECT_EXACT_MICROS
-  #if MICROSECONDS_PER_MILLIS_OVERFLOW >= (1 << 16)
-    #undef CORRECT_EXACT_MICROS // disable correction for such long intervals
-  #elif MICROSECONDS_PER_MILLIS_OVERFLOW >= (1 << 15)
-    #define CORRECT_BITS 8
-  #elif MICROSECONDS_PER_MILLIS_OVERFLOW >= (1 << 14)
-    #define CORRECT_BITS 7
-  #elif MICROSECONDS_PER_MILLIS_OVERFLOW >= (1 << 13)
-    #define CORRECT_BITS 6
-  #elif MICROSECONDS_PER_MILLIS_OVERFLOW >= (1 << 12)
-    #define CORRECT_BITS 5
-  #elif MICROSECONDS_PER_MILLIS_OVERFLOW >= (1 << 11)
-    #define CORRECT_BITS 4
-  #elif MICROSECONDS_PER_MILLIS_OVERFLOW >= (1 << 10)
-    #define CORRECT_BITS 3
-  #elif MICROSECONDS_PER_MILLIS_OVERFLOW >= (1 << 9)
-    #define CORRECT_BITS 2
-  #elif MICROSECONDS_PER_MILLIS_OVERFLOW >= (1 << 8)
-    #define CORRECT_BITS 1
-  #else
-    #define CORRECT_BITS 0
-  #endif
-#ifdef CORRECT_BITS // microsecs per overflow in the expected range of values
-  #define CORRECT_BIT7S (0)
-  #define CORRECT_BIT6
-  #define CORRECT_BIT5
-  #define CORRECT_BIT4
-  #define CORRECT_BIT3
-  #define CORRECT_BIT2
-  #define CORRECT_BIT1
-  #define CORRECT_BIT0
-  #define CORRECT_UINT ((unsigned int) t)
-  #define CORRECT_BYTE (MICROSECONDS_PER_MILLIS_OVERFLOW >> CORRECT_BITS)
-  #if CORRECT_BYTE >= (1 << 8)
-    #error "Miscalculation in micros() exactness correction"
+void init_millis() {
+  /* Initialize Primary Timer */
+  #if (TIMER_TO_USE_FOR_MILLIS == 0)
+    #if defined(WGM01) // if Timer0 has PWM
+      TCCR0A = (1 << WGM01) | (1 << WGM00);
     #endif
-  #if (CORRECT_BYTE & (1 << 7))
-    #undef  CORRECT_BIT7S
-    #define CORRECT_BIT7S (CORRECT_UINT << 1)
-  #endif
-  #if (CORRECT_BYTE & (1 << 6))
-    #undef  CORRECT_BIT6
-    #define CORRECT_BIT6 + CORRECT_UINT
-  #endif
-  #if (CORRECT_BYTE & (1 << 5))
-    #undef  CORRECT_BIT5
-    #define CORRECT_BIT5 + CORRECT_UINT
-  #endif
-  #if (CORRECT_BYTE & (1 << 4))
-    #undef  CORRECT_BIT4
-    #define CORRECT_BIT4 + CORRECT_UINT
-  #endif
-  #if (CORRECT_BYTE & (1 << 3))
-    #undef  CORRECT_BIT3
-    #define CORRECT_BIT3 + CORRECT_UINT
-  #endif
-  #if (CORRECT_BYTE & (1 << 2))
-    #undef  CORRECT_BIT2
-    #define CORRECT_BIT2 + CORRECT_UINT
-  #endif
-  #if (CORRECT_BYTE & (1 << 1))
-    #undef  CORRECT_BIT1
-    #define CORRECT_BIT1 + CORRECT_UINT
-  #endif
-  #if (CORRECT_BYTE & (1 << 0))
-    #undef  CORRECT_BIT0
-    #define CORRECT_BIT0 + CORRECT_UINT
-  #endif
-  #endif // CORRECT_BITS
-#endif // CORRECT_EXACT_MICROS
+    #if defined(TCCR0B) //The x61 has a wacky Timer0!
+      TCCR0B = (MillisTimer_Prescale_Index << CS00);
 
-// the whole number of milliseconds per millis timer overflow
-#define MILLIS_INC (MICROSECONDS_PER_MILLIS_OVERFLOW / 1000U)
+    #elif defined(TCCR0A)  // Tiny x8 has no PWM from timer0
+      TCCR0A = (MillisTimer_Prescale_Index << CS00);
+    #else // tiny26 has no TCCR0A at all, only TCCR0
+      TCCR0 = (MillisTimer_Prescale_Index << CS00);
+    #endif
+  #elif (TIMER_TO_USE_FOR_MILLIS == 1) && defined(TCCR1) //ATtiny x5
+    TCCR1 = (1 << CTC1) | (1 << PWM1A) | (MillisTimer_Prescale_Index << CS10);
+    GTCCR = (1 << PWM1B);
+    // OCR1C = 0xFF; //Use 255 as the top to match with the others as this module doesn't have a 8bit PWM mode.
+    // Don't need to write OCR1C - it's already set to 255 on poweron.
+  #elif (TIMER_TO_USE_FOR_MILLIS == 1) && defined(TCCR1E) //ATtiny x61
+    TCCR1C = 1 << PWM1D;
+    TCCR1B = (MillisTimer_Prescale_Index << CS10);
+    TCCR1A = (1 << PWM1A) | (1 << PWM1B);
+    //cbi(TCCR1E, WGM10); //fast pwm mode
+    //cbi(TCCR1E, WGM11);
+    OCR1C = 0xFF; //Use 255 as the top to match with the others as this module doesn't have a 8bit PWM mode.
+  #elif (TIMER_TO_USE_FOR_MILLIS == 1)
+    TCCR1A = 1 << WGM10;
+    TCCR1B = (1 << WGM12) | (MillisTimer_Prescale_Index << CS10);
+  #endif
 
-// the fractional number of milliseconds per millis timer overflow. we shift right
-// by three to fit these numbers into a byte. (for the clock speeds we care
-// about - 8 and 16 MHz - this doesn't lose precision.)
-#define FRACT_INC (((MICROSECONDS_PER_MILLIS_OVERFLOW % 1000U) >> 3) \
-                   CORRECT_FRACT_PLUSONE)
-#define FRACT_MAX (1000U >> 3)
+  // this needs to be called before setup() or some functions won't work there
+  sei();
 
+    // Enable the overflow interrupt (this is the basic system tic-toc for millis)
+    #if defined(TIMSK) && defined(TOIE0) && (TIMER_TO_USE_FOR_MILLIS == 0)
+      TIMSK |= (1 << TOIE0); //sbi(TIMSK,TOIE0);
+    #elif defined(TIMSK0) && defined(TOIE0) && (TIMER_TO_USE_FOR_MILLIS == 0)
+      TIMSK0 |= (1 << TOIE0); //sbi(TIMSK0,TOIE0);
+    #elif defined(TIMSK) && defined(TOIE1) && (TIMER_TO_USE_FOR_MILLIS == 1)
+      TIMSK |= (1 << TOIE1); //sbi(TIMSK,TOIE1);
+    #elif defined(TIMSK1) && defined(TOIE1) && (TIMER_TO_USE_FOR_MILLIS == 1)
+      TIMSK1 |= (1 << TOIE1); //sbi(TIMSK1,TOIE1);
+    #else
+      #error Millis() Timer overflow interrupt not set correctly
+    #endif
+}
 
 #ifndef CORRECT_EXACT_MICROS
   volatile unsigned long millis_timer_overflow_count = 0;
@@ -399,22 +311,4 @@
       #endif
     #endif
   #endif // !CORRECT_EXACT_MICROS
-  }
-
-  void delay(uint32_t ms) {
-    #if (F_CPU >= 1000000L)
-      uint16_t start = (uint16_t)micros();
-
-      while (ms > 0) {
-        yield();
-        while (((uint16_t)micros() - start) >= 1000 && ms) {
-          ms--;
-          start += 1000;
-        }
-      }
-    #else
-      uint32_t start = millis();
-      while((millis() - start) < ms)  /* NOP */yield();
-      return;
-    #endif
   }

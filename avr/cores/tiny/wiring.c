@@ -5,6 +5,7 @@
  *   Modified  14-10-2009 for attiny45 Saposoft
  *   Modified 17-05-2010 - B.Cook Rewritten to use the various Veneers.
  *   Modified extensively 2016-2021 Spence Konde for ATTinyCore
+ *   Modified 2026 by MCUdude for TinyCore
  *   Free Software - LGPL 2.1, please see LICENCE.md for details
  *---------------------------------------------------------------------------*/
 
@@ -20,149 +21,23 @@
 #endif
 
 
-#if defined(__AVR_ATtiny167__) || defined(__AVR_ATtiny87__)
-  #if F_CPU < 4000000L
-    #define timer0Prescaler (0b010)
-    #define timer0_Prescale_Value  (8)
-  #elif F_CPU <= 8000000L
-    #define timer0Prescaler (0b011)
-    #define timer0_Prescale_Value  (32)
-  #elif F_CPU < 16000000L
-    #define timer0Prescaler (0b100)
-    #define timer0_Prescale_Value  (64)
-  #else
-    #define timer0Prescaler (0b101)
-    #define timer0_Prescale_Value  (128)
-  #endif
-#else
-  #if F_CPU <= 4000000L
-    #define timer0Prescaler (0b010)
-    #define timer0_Prescale_Value  (8)
-  #else
-    #define timer0Prescaler (0b011)
-    #define timer0_Prescale_Value  (64)
-  #endif
-#endif
-/* So that's TC0 done */
 
-
-#if defined(TCCR1E)  //  x61
-  #if F_CPU < 2000000L
-    #define timer1Prescaler (0b0011)
-    #define timer1_Prescale_Value  (4)
-  #elif F_CPU <= 4000000L
-    #define timer1Prescaler (0b0100)
-    #define timer1_Prescale_Value  (8)
-  #elif F_CPU <  8000000L
-    #define timer1Prescaler (0b0101)
-    #define timer1_Prescale_Value  (16)
-  #elif F_CPU <= 16000000L
-    #define timer1Prescaler (0b0110)
-    #define timer1_Prescale_Value  (32)
-  #else
-    #define timer1Prescaler (0b0111)
-    #define timer1_Prescale_Value  (64)
-  #endif
-#elif (defined(TCCR1)) // x5
-  #define TIMER1_USE_FAST_PWM
-  #if F_CPU < 2000000L
-    #define timer1Prescaler (0b0100)
-    #define timer1_Prescale_Value  (8)
-  #elif F_CPU <= 4000000L
-    #define timer1Prescaler (0b0101)
-    #define timer1_Prescale_Value  (16)
-  #elif F_CPU <  8000000L
-    #define timer1Prescaler (0b0110)
-    #define timer1_Prescale_Value  (32)
-  #elif F_CPU <= 16000000L
-    #define timer1Prescaler (0b0111)
-    #define timer1_Prescale_Value  (64)
-  #else
-    #define timer1Prescaler (0b1000)
-    #define timer1_Prescale_Value  (128)
-  #endif
-#else
-  #if F_CPU < 8000000L
-    #define timer1Prescaler (0b010)
-    #define timer1_Prescale_Value  (8)
-    #if F_CPU < 4000000L
-      #define TIMER1_USE_FAST_PWM
-    #endif
-  #else
-    #define timer1Prescaler (0b011)
-    #define timer1_Prescale_Value  (64)
-    #if F_CPU <= 16000000L
-      #define TIMER1_USE_FAST_PWM
-    #endif
-  #endif
-#endif
-
-#if (TIMER_TO_USE_FOR_MILLIS == 0)
-  #define MillisTimer_Prescale_Value  (timer0_Prescale_Value)
-  #define ToneTimer_Prescale_Value    (timer1_Prescale_Value)
-  #define MillisTimer_Prescale_Index  (timer0Prescaler)
-  #define ToneTimer_Prescale_Index    (timer1Prescaler)
-#else
-  #warning "WARNING: Use of Timer1 for millis has been configured - this option is untested and unsupported!"
-  #define MillisTimer_Prescale_Value  (timer1_Prescale_Value)
-  #define ToneTimer_Prescale_Value    (timer0_Prescale_Value)
-  #define MillisTimer_Prescale_Index  (timer1Prescaler)
-  #define ToneTimer_Prescale_Index    (timer0Prescaler)
-#endif
-
-#if F_CPU > 12000000L
-  // above 12mhz, prescale by 128, the highest prescaler available
-  // 20 MHz / 128 = 157 kHz
-  // 16 MHz / 128 = 125 kHz
-  #define ADC_ARDUINO_PRESCALER   B111
-#elif F_CPU >= 6000000L
-  // 12 MHz / 64 ~= 188 KHz
-  // 8 MHz / 64 = 125 KHz
-  #define ADC_ARDUINO_PRESCALER   B110
-#elif F_CPU >= 3000000L
-  // 4 MHz / 32 = 125 KHz
-  #define ADC_ARDUINO_PRESCALER   B101
-#elif F_CPU >= 1500000L
-  // 2 MHz / 16 = 125 KHz
-  #define ADC_ARDUINO_PRESCALER   B100
-#elif F_CPU >= 750000L
-  // 1 MHz / 8 = 125 KHz
-  #define ADC_ARDUINO_PRESCALER   B011
-#elif F_CPU < 400000L
-  // 128 kHz / 2 = 64 KHz -> This is the closest you can get, the prescaler is 2
-  #define ADC_ARDUINO_PRESCALER   B000
-#else //speed between 400khz and 750khz
-  #define ADC_ARDUINO_PRESCALER   B010 //prescaler of 4
-#endif
 #if INITIALIZE_SECONDARY_TIMERS
 static void initToneTimerInternal(void);
 #endif
-static void initMillisTimer();
 static void __empty() {
-  // Empty
-}
+    // Empty
+  }
 void yield(void) __attribute__ ((weak, alias("__empty")));
 
+void delay(unsigned int count)
+{
+  do {
+    yield();
+    _delay_loop_2(16 * F_CPU/1000/4);
+  } while (--count);
+}
 
-
-#ifndef DISABLEMILLIS
-  #include "wiring_millis.inc"
-#else //if DISABLEMILLIS is set, need no millis, micros, and different delay
-  // delay without millis
-  void _delay(uint32_t ms) {
-    while(ms--) {
-      yield();
-      delayMicroseconds(999);
-    }
-  }
-  inline void __attribute__ ((always_inline)) delay(uint32_t ms) { // non-millis-timer-dependent delay()
-    if (__builtin_constant_p(ms)) {
-      _delay_ms(ms); //if its a compile time known constant use the avrlibc version
-    } else {
-      _delay(ms);
-    }
-  }
-#endif
 
 /* This attempts to grab a tuning constant from flash (if it's USING_BOOTLOADER) or EEPROM (if not). Note that it is not called unless ENABLE_TUNING is set.
  * inlined for flash savings (call overhead) not speed; it is only ever called once, on startup, so I think it would get inlined anyway most of the time
@@ -568,7 +443,6 @@ void init() {
   #ifdef SET_REMAPUSI
     USIPP = 1;
   #endif
-  initMillisTimer();
   // Initialize the timer used for Tone
   #if INITIALIZE_SECONDARY_TIMERS
     initToneTimerInternal();
@@ -587,75 +461,7 @@ void init() {
 }
 
 
-/* Okay, timer registers:
- * It is arguable whether it's actually better to check for these - the way we're doing it in these files,
- * we are often not checking for features, but specific families of parts handled case-by-case, and there
- * will never be new classic AVRs released.... so why not just test for part families when that's what we're doing?
- *
- * TCCR1E is only on x61.
- * TCCR1D is only on x7 and x61.
- * The x7 has weird things about all it's timers. TC0 is strange, and TC1 has this crazy output mux.
- * The timers on the x61 are MUCH wierder. So both of those need special handling, which is kind of a rook.
- * Gotta jump through hoops like you were a circus animal just to get an 'x7 to give you just three channels at the
- * same frequency....
- *
- * TCCR1 is only on x5
- *
- * All non-85 have TCCR1A.
- *
- * Check for COM0xn bits to know if TIMER0 has PWM (it doesn't on x61 - it's a weird timer there - can be 16-bit,
- * and has output compare units that just generate interrupts. General freakshow like everything else on those parts.
- * And it doesn't on an x8 'cause Atmel cheaped out).
- */
-void initMillisTimer() {
-  /* Initialize Primary Timer */
-  #if (TIMER_TO_USE_FOR_MILLIS == 0)
-    #if defined(WGM01) // if Timer0 has PWM
-      TCCR0A = (1 << WGM01) | (1 << WGM00);
-    #endif
-    #if defined(TCCR0B) //The x61 has a wacky Timer0!
-      TCCR0B = (MillisTimer_Prescale_Index << CS00);
 
-    #elif defined(TCCR0A)  // Tiny x8 has no PWM from timer0
-      TCCR0A = (MillisTimer_Prescale_Index << CS00);
-    #else // tiny26 has no TCCR0A at all, only TCCR0
-      TCCR0 = (MillisTimer_Prescale_Index << CS00);
-    #endif
-  #elif (TIMER_TO_USE_FOR_MILLIS == 1) && defined(TCCR1) //ATtiny x5
-    TCCR1 = (1 << CTC1) | (1 << PWM1A) | (MillisTimer_Prescale_Index << CS10);
-    GTCCR = (1 << PWM1B);
-    // OCR1C = 0xFF; //Use 255 as the top to match with the others as this module doesn't have a 8bit PWM mode.
-    // Don't need to write OCR1C - it's already set to 255 on poweron.
-  #elif (TIMER_TO_USE_FOR_MILLIS == 1) && defined(TCCR1E) //ATtiny x61
-    TCCR1C = 1 << PWM1D;
-    TCCR1B = (MillisTimer_Prescale_Index << CS10);
-    TCCR1A = (1 << PWM1A) | (1 << PWM1B);
-    //cbi(TCCR1E, WGM10); //fast pwm mode
-    //cbi(TCCR1E, WGM11);
-    OCR1C = 0xFF; //Use 255 as the top to match with the others as this module doesn't have a 8bit PWM mode.
-  #elif (TIMER_TO_USE_FOR_MILLIS == 1)
-    TCCR1A = 1 << WGM10;
-    TCCR1B = (1 << WGM12) | (MillisTimer_Prescale_Index << CS10);
-  #endif
-
-  // this needs to be called before setup() or some functions won't work there
-  sei();
-
-  #ifndef DISABLEMILLIS
-    // Enable the overflow interrupt (this is the basic system tic-toc for millis)
-    #if defined(TIMSK) && defined(TOIE0) && (TIMER_TO_USE_FOR_MILLIS == 0)
-      TIMSK |= (1 << TOIE0); //sbi(TIMSK,TOIE0);
-    #elif defined(TIMSK0) && defined(TOIE0) && (TIMER_TO_USE_FOR_MILLIS == 0)
-      TIMSK0 |= (1 << TOIE0); //sbi(TIMSK0,TOIE0);
-    #elif defined(TIMSK) && defined(TOIE1) && (TIMER_TO_USE_FOR_MILLIS == 1)
-      TIMSK |= (1 << TOIE1); //sbi(TIMSK,TOIE1);
-    #elif defined(TIMSK1) && defined(TOIE1) && (TIMER_TO_USE_FOR_MILLIS == 1)
-      TIMSK1 |= (1 << TOIE1); //sbi(TIMSK1,TOIE1);
-    #else
-      #error Millis() Timer overflow interrupt not set correctly
-    #endif
-  #endif
-}
 // This clears up the timer settings, and then calls the tone timer initialization function (unless it's been disabled - but in this case, whatever called this isn't working anyway!
 // Note that this is used **only** when directly called - and serves only to reset the timers to stock state. The initToneTimerInternal() does the other half, and is called by this
 // 2023 - commented out a few register writes in here because we then rewrite the same registers a few moments later.
