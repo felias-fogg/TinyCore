@@ -74,10 +74,8 @@ void * operator new[](size_t size, void * ptr) noexcept {
 // is trying to get alignment that it doesn't actually need, or is - by sheet luck - ending up with the addresses which worked. E
 #if (__cpp_aligned_new >= 201606L)
 
-  void badAlloc(const char*) __attribute__((error("")));
 
   void* operator new  (size_t size, std::align_val_t al) {
-    badAlloc("Alignment aware new/delete operators, a C++ 17 feaure, are not supported by this core or any other AVR cores at this point in time");
     (void) al;
     return malloc(size);
   }
@@ -114,12 +112,10 @@ void* operator new  (size_t size, std::align_val_t al) {
 */
 
   void* operator new[](size_t size, std::align_val_t al) {
-    badAlloc("Alignment aware new/delete operators, a C++ 17 feaure, are not supported by this core or any other AVR cores at this point in time");
     (void) al;
     return malloc(size);
   }
   void  operator delete  (void* ptr, std::align_val_t al) noexcept {
-    badAlloc("Alignment aware new/delete operators, a C++ 17 feaure, are not supported by this core or any other AVR cores at this point in time");
     (void) al;
     free(ptr);
   }
@@ -147,18 +143,15 @@ void* operator new  (size_t size, std::align_val_t al) {
   }
   */
   void  operator delete[](void* ptr, std::align_val_t al) noexcept {
-    badAlloc("Alignment aware new/delete operators, a C++ 17 feaure, are not supported by this core or any other AVR cores at this point in time");
     (void) al;
     free(ptr);
   }
   void  operator delete  (void* ptr, size_t size, std::align_val_t al) noexcept{
-    badAlloc("Alignment aware new/delete operators, a C++ 17 feaure, are not supported by this core or any other AVR cores at this point in time");
     (void) al;
     (void) size;
     free(ptr);
   }
   void  operator delete[](void* ptr, size_t size, std::align_val_t al) noexcept {
-    badAlloc("Overaligned allocation/deallocation is a C++ 17 feature, and is not supported by this or other AVR cores at this point in time");
     (void) al;
     (void) size;
     free(ptr);
