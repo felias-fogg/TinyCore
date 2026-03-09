@@ -16,6 +16,7 @@ menu.chip=Chip
 menu.bootloader=Bootloader
 menu.baudrate=Baud rate
 menu.wiremode=Wire mode
+menu.resetpin=Reset pin
 
 
 ########################
@@ -133,7 +134,7 @@ x5.menu.clock.16MHz_internal_PLL=16 MHz internal PLL osc.
 x5.menu.clock.16MHz_internal_PLL.bootloader.clock=16MHz
 x5.menu.clock.16MHz_internal_PLL.bootloader.osc=i
 x5.menu.clock.16MHz_internal_PLL.bootloader.low_fuses=0xf1
-x5.menu.clock.16MHz_internal_PLL.bootloader.baudrate=57600
+x5.menu.clock.16MHz_internal_PLL.bootloader.baudrate=115200
 x5.menu.clock.16MHz_internal_PLL.build.clocksource=6
 x5.menu.clock.16MHz_internal_PLL.build.f_cpu=16000000L
 
@@ -381,7 +382,7 @@ x4.menu.clock.16MHz_internal_PLL=16 MHz internal PLL osc.
 x4.menu.clock.16MHz_internal_PLL.bootloader.clock=16MHz
 x4.menu.clock.16MHz_internal_PLL.bootloader.osc=i
 x4.menu.clock.16MHz_internal_PLL.bootloader.low_fuses=0xf1
-x4.menu.clock.16MHz_internal_PLL.bootloader.baudrate=57600
+x4.menu.clock.16MHz_internal_PLL.bootloader.baudrate=115200
 x4.menu.clock.16MHz_internal_PLL.build.clocksource=6
 x4.menu.clock.16MHz_internal_PLL.build.f_cpu=16000000L
 
@@ -1158,7 +1159,7 @@ x61.menu.clock.16MHz_internal_PLL=16 MHz internal PLL osc.
 x61.menu.clock.16MHz_internal_PLL.bootloader.clock=16MHz
 x61.menu.clock.16MHz_internal_PLL.bootloader.osc=i
 x61.menu.clock.16MHz_internal_PLL.bootloader.low_fuses=0xf1
-x61.menu.clock.16MHz_internal_PLL.bootloader.baudrate=57600
+x61.menu.clock.16MHz_internal_PLL.bootloader.baudrate=115200
 x61.menu.clock.16MHz_internal_PLL.build.clocksource=6
 x61.menu.clock.16MHz_internal_PLL.build.f_cpu=16000000L
 
