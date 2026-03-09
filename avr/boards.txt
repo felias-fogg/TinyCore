@@ -17,6 +17,7 @@ menu.bootloader=Bootloader
 menu.baudrate=Baud rate
 menu.wiremode=Wire mode
 menu.resetpin=Reset pin
+menu.softserial=Software serial
 
 
 ########################
@@ -35,8 +36,7 @@ x5.bootloader.pins=swio_rxb1_txb0
 x5.build.core=tiny
 x5.build.variant=tinyx5
 x5.build.board=AVR_ATTINYX5
-x5.build.extra_flags={build.pllsettings}
-x5.build.pllsettings=
+x5.build.extra_flags={build.softser}
 
 # Upload port select / Bootloader
 x5.menu.bootloader.no_bootloader=No bootloader
@@ -119,6 +119,12 @@ x5.menu.chip.25=ATtiny25
 x5.menu.chip.25.build.mcu=attiny25
 x5.menu.chip.25.upload.maximum_size=2048
 x5.menu.chip.25.upload.maximum_data_size=128
+
+# Software serial
+x5.menu.softserial.rxtx=RX and TX
+x5.menu.softserial.rxtx.build.softser=
+x5.menu.softserial.tx=TX only
+x5.menu.softserial.tx.build.softser=-DSOFT_TX_ONLY
 
 # Brown out detection
 x5.menu.bod.2v7=BOD 2.7V
@@ -292,8 +298,7 @@ x4.bootloader.pins=swio_rxa2_txa1
 x4.build.core=tiny
 x4.build.variant=tinyx4_cw
 x4.build.board=AVR_ATTINYX4
-x4.build.extra_flags={build.pllsettings}
-x4.build.pllsettings=
+x4.build.extra_flags={build.softser}
 
 # Upload port select / Bootloader
 x4.menu.bootloader.no_bootloader=No bootloader
@@ -376,6 +381,12 @@ x4.menu.chip.24=ATtiny24
 x4.menu.chip.24.build.mcu=attiny24
 x4.menu.chip.24.upload.maximum_size=2048
 x4.menu.chip.24.upload.maximum_data_size=128
+
+# Software serial
+x4.menu.softserial.rxtx=RX and TX
+x4.menu.softserial.rxtx.build.softser=
+x4.menu.softserial.tx=TX only
+x4.menu.softserial.tx.build.softser=-DSOFT_TX_ONLY
 
 # Brown out detection
 x4.menu.bod.2v7=BOD 2.7V
@@ -710,7 +721,7 @@ x8.bootloader.pins=swio_rxd7_txd6
 x8.build.core=tiny
 x8.build.variant=tinyx8
 x8.build.board=AVR_ATTINYX8
-x8.build.extra_flags=
+x8.build.extra_flags={build.softser}
 
 # Upload port select / Bootloader
 x8.menu.bootloader.no_bootloader=No bootloader
@@ -788,6 +799,12 @@ x8.menu.chip.48=ATtiny48
 x8.menu.chip.48.build.mcu=attiny48
 x8.menu.chip.48.upload.maximum_size=4096
 x8.menu.chip.48.upload.maximum_data_size=256
+
+# Software serial
+x8.menu.softserial.rxtx=RX and TX
+x8.menu.softserial.rxtx.build.softser=
+x8.menu.softserial.tx=TX only
+x8.menu.softserial.tx.build.softser=-DSOFT_TX_ONLY
 
 # Brown out detection
 x8.menu.bod.2v7=BOD 2.7V
@@ -1090,8 +1107,7 @@ x61.bootloader.pins=swio_rxa7_txa6
 x61.build.core=tiny
 x61.build.variant=tinyx61
 x61.build.board=AVR_ATTINYX61
-x61.build.extra_flags={build.pllsettings}
-x61.build.pllsettings=
+x61.build.extra_flags={build.softser}
 
 # Upload port select / Bootloader
 x61.menu.bootloader.no_bootloader=No bootloader
@@ -1160,20 +1176,26 @@ x61.menu.eeprom.erase=EEPROM not retained
 x61.menu.eeprom.erase.bootloader.eesave_bit=1
 
 # Chip variants
-x61.menu.chip.84=ATtiny861
-x61.menu.chip.84.build.mcu=attiny861
-x61.menu.chip.84.upload.maximum_size=8192
-x61.menu.chip.84.upload.maximum_data_size=512
+x61.menu.chip.861=ATtiny861
+x61.menu.chip.861.build.mcu=attiny861
+x61.menu.chip.861.upload.maximum_size=8192
+x61.menu.chip.861.upload.maximum_data_size=512
 
-x61.menu.chip.44=ATtiny461
-x61.menu.chip.44.build.mcu=attiny461
-x61.menu.chip.44.upload.maximum_size=4096
-x61.menu.chip.44.upload.maximum_data_size=256
+x61.menu.chip.461=ATtiny461
+x61.menu.chip.461.build.mcu=attiny461
+x61.menu.chip.461.upload.maximum_size=4096
+x61.menu.chip.461.upload.maximum_data_size=256
 
-x61.menu.chip.24=ATtiny261
-x61.menu.chip.24.build.mcu=attiny261
-x61.menu.chip.24.upload.maximum_size=2048
-x61.menu.chip.24.upload.maximum_data_size=128
+x61.menu.chip.261=ATtiny261
+x61.menu.chip.261.build.mcu=attiny261
+x61.menu.chip.261.upload.maximum_size=2048
+x61.menu.chip.261.upload.maximum_data_size=128
+
+# Software serial
+x61.menu.softserial.rxtx=RX and TX
+x61.menu.softserial.rxtx.build.softser=
+x61.menu.softserial.tx=TX only
+x61.menu.softserial.tx.build.softser=-DSOFT_TX_ONLY
 
 # Brown out detection
 x61.menu.bod.2v7=BOD 2.7V
@@ -1805,7 +1827,7 @@ x313.menu.clock.1MHz_external.build.f_cpu=1000000L
 43.build.core=tiny
 43.build.variant=tiny43
 43.build.board=AVR_ATTINY43
-43.build.extra_flags=
+43.build.extra_flags={build.softser}
 
 # Upload port select / Bootloader
 43.menu.bootloader.no_bootloader=No bootloader
@@ -1873,6 +1895,12 @@ x313.menu.clock.1MHz_external.build.f_cpu=1000000L
 43.menu.eeprom.erase=EEPROM not retained
 43.menu.eeprom.erase.bootloader.eesave_bit=1
 
+# Software serial
+43.menu.softserial.rxtx=RX and TX
+43.menu.softserial.rxtx.build.softser=
+43.menu.softserial.tx=TX only
+43.menu.softserial.tx.build.softser=-DSOFT_TX_ONLY
+
 # Brown out detection
 43.menu.bod.2v7=BOD 2.7V
 43.menu.bod.2v7.bootloader.bod_bits=101
@@ -1939,6 +1967,7 @@ x313.menu.clock.1MHz_external.build.f_cpu=1000000L
 26.build.core=tiny
 26.build.variant=tiny26
 26.build.board=AVR_ATTINY26
+26.build.extra_flags={build.softser}
 
 # Upload port select / Bootloader
 26.menu.bootloader.no_bootloader=No bootloader
@@ -1951,6 +1980,12 @@ x313.menu.clock.1MHz_external.build.f_cpu=1000000L
 26.menu.eeprom.keep.bootloader.eesave_bit=0
 26.menu.eeprom.erase=EEPROM not retained
 26.menu.eeprom.erase.bootloader.eesave_bit=1
+
+# Software serial
+26.menu.softserial.rxtx=RX and TX
+26.menu.softserial.rxtx.build.softser=
+26.menu.softserial.tx=TX only
+26.menu.softserial.tx.build.softser=-DSOFT_TX_ONLY
 
 # Brown out detection
 26.menu.bod.2v7=BOD 2.7V
