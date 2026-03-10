@@ -436,6 +436,9 @@ void init_clock() {
   #endif //end handling for the two types of internal oscillator derived clock source and 16MHz ext clock of MH-ET tiny88
 }
 void init() {
+  // this needs to be called before setup() or some functions won't work there
+  sei();
+
   init_clock(); // initialize the main system clock
   #ifdef SET_REMAP
     REMAP = SET_REMAP;
