@@ -33,10 +33,10 @@
 extern "C"{
 
   #ifndef SOFT_TX_ONLY
-  #define RXMASK = (1 << SOFTSERIAL_RXBIT)
+    #define RXMASK (1 << SOFTSERIAL_RXBIT)
     soft_ring_buffer rx_buffer = {{ 0 }, 0, 0};
     ISR(SOFTSERIAL_vect) {
-    uint8_t ch = 0;
+      uint8_t ch = 0;
     __asm__ __volatile__ (
 		"   rcall uartDelay\n"          // Get to 0.25 of start bit (our baud is too fast, so give room to correct)
 		"1: rcall uartDelay\n"              // Wait 0.25 bit period
@@ -116,12 +116,14 @@ extern "C"{
   TinySoftwareSerial::TinySoftwareSerial(soft_ring_buffer *rx_buffer) {
     _rx_buffer = rx_buffer;
     _txmask   = _BV(SOFTSERIAL_TXBIT);
+    _txunmask = ~_txmask;
     _delayCount = 0;
   }
 #endif
 
 void TinySoftwareSerial::setTxBit(uint8_t txbit) {
   _txmask   = _BV(txbit);
+  _txunmask = ~txbit;
 }
 
 void TinySoftwareSerial::begin(long baud) {
@@ -243,54 +245,43 @@ bool TinySoftwareSerial::stopListening() {
 }
 
 size_t TinySoftwareSerial::write(uint8_t ch) {
-  register uint8_t DelayCount asm ("r21");
-  DelayCount = Serial._delayCount;
-  if (!_delayCount) {
-    return 0;
-  }
+  uint8_t oldSREG = SREG;
+  cli(); //Prevent interrupts from breaking the transmission. Note: TinySoftwareSerial is half duplex.
+  //it can either receive or send, not both (because receiving requires an interrupt and would stall transmission
   __asm__ __volatile__ (
-    "in r1, 0x3F"                 "\n\t" // we don't use the known zero in this routine, so we stash the SREG there.
-    //                                   // We can't use r0 for this, because uartDelay uses r0 as it's delay counter.
-    "cli"                         "\n\t" // disable interrupts if they're not disabled already.
-    "ldi r20, 10"                 "\n\t" //
-    "in r19, %[uartPort]"         "\n\t" // load the current value of the TX PORT register.
-    "or r19, %[txmask]"           "\n\t" // there's our pattern for a 1. one hopes that this line is unnecessary since serial is IDLE HIGH.
-    "mov r18,r19"                 "\n\t" // copy it to the zero bit...
-    "eor r18, %[txmask]"          "\n\t" // xor with the txmask, which has all but 1 bit set, a bit which we know is set in the destination register. 4 instructions to prepare the 0 and 1 bit patterns.
-    "com %[ch]"                   "\n\t" // Invert the bits because we will be shifting in 0's, and the stop bit has to be a 1, so a 0 in carry must output a "1" bit pattern.
-    "sec"                         "\n\t" // clear the carry bit - the start bit is a 0 bit, so that's what we want to generate
-  //"_txstart:"                          // labels cause problems with some optimization options which try to inline this.
-  //                                     // running total of clocks so far this bit after executing this line is in left column.
-    "brcc .+4"  /* _txpart2 */    "\n\t" //  1      if we have a 0 in carry bit, we want to output the 1 pattern stored in r19 so skip 2 insn's
-    "out %[uartPort], r18"        "\n\t" //  2      output a zero bit (clock tally is for the case when branch is not taken)
-    "rjmp .+4"                    "\n\t" //  4      jump over the two instructions for outputting a 1 bringing us to the delay part.
-  //"_txpart2:"                          //  2      used with brcs with branch (we're starting from clock tally of 2 because we took the branch)
-    "out %[uartPort], r19"        "\n\t" //  3      output a 1 bit
-    "nop"                         "\n\t" //  4      pad the 1-bit case with a nop so that the two paths have equal running time.
-    "rcall uartDelay"             "\n\t" // then we do the 4 quarter-bit delays. rcall is okay here, because we don't support any 16k parts. The 167 and 1634 have HW serial.
-    "rcall uartDelay"             "\n\t" // rcall = 3 clocks, and the return = 4. The body of uartDelay takes 1 clock for the mov
-    "rcall uartDelay"             "\n\t" // plus 3 * _delayCount, minus 1 on the last loop since branch not taken, or 3x _delayCount
-    "rcall uartDelay"             "\n\t" // that done, we'll rightshift the bit and decrement the count
-    "lsr %[ch]"                   "\n\t" //  1 - shift the output character right one place, shifting in a 0 on the left. Shifted bit is in carry
-    "dec r20"                     "\n\t" //  1 - decrement count
-    "brne .-24"  /* to _txstart */"\n\t" //  2 total 4; Loop runtime per bit is hence 4 + 4 + 28 + 12*delaycount
-    "out 0x3F, r1"                "\n\t" // restore SREG turning interrupts back on if they were on before
-    "eor r1, r1"                  "\n\t" // and clear r1 since compiler expects it to always contain 0.
-    : [ch] "+r" (ch) // this is a read-write variable - as the sending process is destructive.
-    : [uartPort] "I" (_SFR_IO_ADDR(SOFTSERIAL_PORT)),
-      [txmask] "r" ((uint8_t) _txmask),
-      [delaycount] "d" (DelayCount) // we never read this, but we need to make sure it's in r21 because delayCount expects it there.
-    : "r18","r19","r20"
-    /* zero bit pattern, one bit pattern, count - all are call-clobbered, and we don't touch r24, which will contain ch when we start,
-    and get replaced with 1 after this block to return 1, thus these clobbers should result in no additional code. */
+    "   com %[ch]             \n" // ones complement, carry set
+    "   sec                   \n"
+    "1: brcc 2f               \n"
+    "   in r23,%[uartPort]    \n"
+    "   and r23,%[uartUnmask] \n"
+    "   out %[uartPort],r23   \n"
+    "   rjmp 3f               \n"
+    "2: in r23,%[uartPort]    \n"
+    "   or r23,%[uartMask]    \n"
+    "   out %[uartPort],r23   \n"
+    "   nop                   \n"
+    "3: rcall uartDelay       \n"
+    "   rcall uartDelay       \n"
+    "   rcall uartDelay       \n"
+    "   rcall uartDelay       \n"
+    "   lsr %[ch]             \n"
+    "   dec %[count]          \n"
+    "   brne 1b               \n"
+    :
+    :
+      [ch] "r" (ch),
+      [count] "r" ((uint8_t)10),
+      [uartPort] "I" (_SFR_IO_ADDR(ANALOG_COMP_PORT)),
+      [uartMask] "r" (_txmask),
+      [uartUnmask] "r" (_txunmask)
+    : "r23",
+      "r24",
+      "r25"
   );
-  /*  Time per bit is 8 + 4 (3 (rcall) + 4)) + 4 * uartDelay
-   *  or 36 + 4*uartdelay. uartdelay = is lds, mov (3) + (dec brne) * loopcount.
-   *  so we have 48 + 12*loopcount clocks per bit.
-   *  For RX is 45 + 12*loopcount
-   */
+  SREG = oldSREG;
   return 1;
 }
+
 void TinySoftwareSerial::printHex(const uint8_t b) {
     char x = (b >> 4) | '0';
     if (x > '9')
