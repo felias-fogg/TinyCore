@@ -58,7 +58,7 @@ Can't decide what microcontroller to choose? Have a look at the specification ta
 | *HW serial ports* | 0            | 0            | 2        | 0            | 1       | 0        | 1         | 2     | 1    | 0    | 0    |
 
 ## Supported clock frequencies
-TinyCore supports a variety of different clock frequencies. Select the microcontroller in the boards menu, then select the clock frequency. *You will have to hit "Burn bootloader" in order to set the correct fuses and upload the correct bootloader. This also has to be done if you want to change any of the fuse settings (BOD and EEPROM settings) regardless if a bootloader is installed or not*. Make sure you connect an ISP programmer, and select the correct one in the "Programmers" menu.* 
+TinyCore supports a variety of different clock frequencies. Select the microcontroller in the boards menu, then select the clock frequency. *You will have to hit "Burn bootloader" in order to set the correct fuses and upload the correct bootloader. This also has to be done if you want to change any of the fuse settings (BOD and EEPROM settings) regardless if a bootloader is installed or not. Make sure you connect an ISP programmer, and select the correct one in the "Programmers" menu.*
 
 For time-critical operations, an external crystal/oscillator is recommended. Urboot bootloader has automatic baud rate detection on devices that have a *hardware serial port*. You can change the default upload baud rate in the Tools menu. Note that not all baud rates will work with all clock frequency options, due to [UART baud rate error](https://wormfood.net/avrbaudcalc.php) being too high.
 
