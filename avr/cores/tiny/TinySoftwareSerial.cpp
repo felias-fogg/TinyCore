@@ -35,39 +35,36 @@ extern "C"{
   #ifndef SOFT_TX_ONLY
     soft_ring_buffer rx_buffer = {{ 0 }, 0, 0};
     ISR(SOFTSERIAL_vect) {
-      register uint8_t DelayCount asm ("r21");
-      DelayCount = Serial._delayCount;
-      // 4 clocks to get to the interrupt vector, per "Interrupt Response Time" section of datasheet, plus 2 for the rjmp itself
-      // then there's the Prologue; push r0, push r1, in r0, sreg, push r0, push some register (ch) push r21 = 11 clocks total 17
-      uint8_t ch;
-      __asm__ __volatile__ (
-        "ldi %[rxch], 0x80"        "\n\t"   // We want to start with 0b1000000 in the register that we're putting the received bits. We
-        "clc"                      "\n\t"   // clear carry, we may then set it again. uartDelay DOES NOT CHANGE CARRY because it uses use DEC decrement the number...
-        "rcall uartDelay"          "\n\t"   // delay for 1/4th of a bit period. this, combined with the prologue, 2 cycles to lds the delayCount into r21, and  2 clocks above (ldi, clc)
-    //                                      // we hope will bring us to about the middle of the start bit. 28 + 3*_delayCount should be approx (actual bit time) / 2
-    //  "_rxstart:" //label caused problems
-        "rcall uartDelay"          "\n\t"   // Wait 0.25 bit period
-        "rcall uartDelay"          "\n\t"   // Wait 0.25 bit period
-        "rcall uartDelay"          "\n\t"   // Wait 0.25 bit period
-        "rcall uartDelay"          "\n\t"   // Wait 0.25 bit period
-        "sbic %[pin], %[rxbit]"    "\n\t"   // 1 Skip the SEC below if the bit is clear
-        "sec"                      "\n\t"   // 2 Set the carry flag so we can shift it in
-        "ror %[rxch]"              "\n\t"   // 3 This clears the carry bit UNTIL it shifts out the bit from the 0x80, which indicates that we got the whole byte and are done.
-        "brcc .-16"                "\n\t"   // 5 clock total. Assuming carry is clear, we go back to the delay.
-        //                                  // total (4 * (3 + 4 + 3 * _delayCount) + 5) * 8 + (17 + 4 + 3 + 4 + 3 * delayCount) -1 (brcc not branching last bit) clock cycles have gone by since the falling edge of the start bit.
-        //                                  // (4 * (3 + 4 + 3 * _delayCount) + 5) * 8 + (17 + 4 + 3 + 4 + 3 * delayCount) -1  =  23 + 160 + 224 + 33 * 3 * _delayCount  = 447 + 99 * _delayCount
-        //                                  // We sampled the final bit 4 clocks before that, at 443+99*_delayTime / (actual bit time in clocks) must be between 8 and 9 or we received garbage.
-        // "sbis %[pin], %[rxbit]"   "\n\t" // check the port input bit itself  and wait until it is a 1 (meaning no further transitions and we're on either a 1 as last bit or the stop bit)
-        // "rjmp .-4"                "\n\t" //
-        // Wait - do we need this? The interrupt happens on the rising edge of ACO (falling edge of RX. If we're in the last bit, it's either a 1 or a 0. If it's a 1, then there are no further transitions)
-        // and no reason wait before storing the character and exiting the interrupt. If it's a 0, the only edge is a rising edge on RX, which is a falling edge on ACO, which doesn't trigger the ISR.
-        // No, we don't! And the faster we gtfo of the interrupt the faster the maximum baud rate and the better overall app performance, not to mention saving 2 words of flash.
-        : [rxch]"=r" (ch)
-        : [pin] "I" (_SFR_IO_ADDR(SOFTSERIAL_PIN)),
-          [rxbit] "I" (SOFTSERIAL_RXBIT),
-          [delaycount] "d" (DelayCount)
-        : "r0"
-      );
+  uint8_t ch = 0;
+    __asm__ __volatile__ (
+		"   rcall uartDelay\n"          // Get to 0.25 of start bit (our baud is too fast, so give room to correct)
+		"1: rcall uartDelay\n"              // Wait 0.25 bit period
+		"   rcall uartDelay\n"              // Wait 0.25 bit period
+		"   rcall uartDelay\n"              // Wait 0.25 bit period
+		"   rcall uartDelay\n"              // Wait 0.25 bit period
+		"   clc\n"
+		"   in r23,%[pin]\n"
+		"   and r23, %[mask]\n"
+		"   breq 2f\n"
+		"   sec\n"
+		"2: ror   %0\n"                    
+		"   dec   %[count]\n"
+		"   breq  3f\n"
+		"   rjmp  1b\n"
+		"3: rcall uartDelay\n"              // Wait 0.25 bit period
+		"   rcall uartDelay\n"              // Wait 0.25 bit period
+		:
+		  "=r" (ch)
+		:
+		  "0" ((uint8_t)0),
+		  [count] "r" ((uint8_t)8),
+		  [pin] "I" (_SFR_IO_ADDR(ANALOG_COMP_PIN)),
+		  [mask] "r" (Serial._rxmask)
+		:
+		  "r23",
+		  "r24",
+		  "r25"
+    );
       /* clear the flag once we have finished receiving the byte. Per datasheet:
           "the Program Counter is vectored to the actual Interrupt Vector in order to execute the interrupt handling routine, and hardware clears the corresponding Interrupt Flag."
         This implies that the automatic clearing happens **at the start** of the interrupt. But the interrupt condition (rising edge of ACO) will occur again, likely several times
@@ -120,7 +117,11 @@ extern "C"{
   TinySoftwareSerial::TinySoftwareSerial(soft_ring_buffer *rx_buffer) {
     _rx_buffer = rx_buffer;
 
-    _txmask   = _BV(SOFTSERIAL_TXBIT);
+    _txmask = _BV(SOFTSERIAL_TXBIT);
+    #ifndef SOFT_TX_ONLY
+      _rxmask = _BV(SOFTSERIAL_RXBIT);
+    #endif
+
 
     _delayCount = 0;
   }
