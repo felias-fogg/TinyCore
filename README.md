@@ -67,7 +67,7 @@ Each chip family has different pinouts, peripherals, and capabilities. Some diff
 | *Diff. ADC pairs*        | 2            | 12           | "46"* (18)   | "16" (10)    | 8          | none      | none      | none     | none     | none     | 8        |
 | *Diff. ADC gain*         | 1x, 20x      | 1x, 20x      | 1x,20x,100x  | 1, 8, 20, 32x| 8x, 20x    | none      | none      | none     | none     | none     | 1x, 20x  |
 
-<b>*</b> The quoted figures originate from Atmel marketing material and are inconsistent with both the counting methodology applied to other parts and fundamental mathematical principles. For example, on the ATtiny441/841, the differential pair count was inflated to 46 by counting each unique pin pair twice (accounting for polarity reversal) and including the 10 channels where the same pin is used as both positive and negative input — intended for offset calibration, these channels will read zero except for offset error. The historically established convention counts only unique pairs and excludes zero-read channels, yielding 18 pairs. Hence the notation: "46" (18).
+<b>*</b> The quoted figures originate from Atmel marketing material and are inconsistent with both the counting methodology applied to other parts and fundamental mathematical principles. For example, on the ATtiny441/841, the differential pair count was inflated to 46 by counting each unique pin pair twice (accounting for polarity reversal) and including the 10 channels where the same pin is used as both positive and negative input, intended for offset calibration, these channels will read zero except for offset error. The historically established convention counts only unique pairs and excludes zero-read channels, yielding 18 pairs. Hence the notation: "46" (18).
 </details>
 
 
@@ -173,7 +173,6 @@ Make sure you connect an ISP programmer, and select the correct one in the "Prog
 
 ## How to install
 #### Boards Manager Installation
-This installation method requires Arduino IDE version 1.8.0 or greater.
 * Open the Arduino IDE.
 * Open the **File > Preferences** menu item.
 * Enter the following URL in **Additional Boards Manager URLs**: `https://mcudude.github.io/TinyCore/package_MCUdude_TinyCore_index.json`
