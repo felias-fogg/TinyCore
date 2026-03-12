@@ -47,7 +47,7 @@ Each chip family has different pinouts, peripherals, and capabilities. Some diff
 * [ATtiny43](/avr/extras/ATtiny_43.md)
 * [ATtiny26](/avr/extras/ATtiny_26.md)
 
-Can't decide what microcontroller to choose? Have a look at the specification table below:
+See the specification table below for a quick comparison:
 
 | **ATtiny**        | 25/45/85     | 24/44/84     | 441/841  | 261/461/861  | 87/167  | 48/88    | 2313/4313 | 1634  | 828  | 43   | 26   |
 |-------------------|--------------|--------------|----------|--------------|-------- |----------|-----------|-------|------|------|------|
@@ -55,7 +55,6 @@ Can't decide what microcontroller to choose? Have a look at the specification ta
 | *RAM*             | 128/256/512B | 128/256/512B | 256/512B | 128/256/512B | 512B    | 256/512B | 128/256B  | 1kiB  | 512B | 256B | 128B |
 | *EEPROM*          | 128/256/512B | 128/256/512B | 256/512B | 128/256/512B | 512B    | 64B      | 128/256B  | 512B  | 256B | 64B  | 128B |
 | *PWM pins*        | 3            | 4            | 6        | 3            | 3       | 2        | 4         | 4     | 4    | 4    | 2    |
-| *HW serial ports* | 0            | 0            | 2        | 0            | 1       | 0        | 1         | 2     | 1    | 0    | 0    |
 
 ## Supported clock frequencies
 TinyCore supports a variety of different clock frequencies. Select the microcontroller in the boards menu, then select the clock frequency. *You will have to hit "Burn bootloader" in order to set the correct fuses and upload the correct bootloader. This also has to be done if you want to change any of the fuse settings (BOD and EEPROM settings) regardless if a bootloader is installed or not. Make sure you connect an ISP programmer, and select the correct one in the "Programmers" menu.*
