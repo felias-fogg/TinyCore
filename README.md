@@ -18,6 +18,7 @@ TinyCore is a fork of the [ATTinyCore 2.0.0 branch](https://github.com/SpenceKon
 * [EEPROM retain option](#eeprom-option)
 * [Printf support](#printf-support)
 * [Pin macros](#pin-macros)
+* [Internal oscillator calibration (OSCCAL)](#internal-oscillator-calibration-osccal)
 * [Write to own flash](#write-to-own-flash)
 * [Programmers](#programmers)
 * **[How to install](#how-to-install)**
@@ -159,6 +160,11 @@ digitalWrite(PIN_PB0, HIGH);
 digitalWrite(0, HIGH);
 
 ```
+
+### Internal oscillator calibration (OSCCAL)
+The internal 8 MHz oscillator on these microcontrollers aren't all that accurate, and is both temperature and voltage dependent. Depending on the application, it might be necessary to perform an oscillator calibration. TinyCore provides a simple [Oscillator calibration sketch](/avr/libraries/TinyCore/examples/OscillatorCalibration/OscillatorCalibration.ino) that uses the incoming UART data to calibrate its clock. Read more about this in the [device spesific documentation](#supported-microcontrollers).
+
+![OSCCAL procedure](/avr/extras/OSCCAL_procedure.gif "OSCCAL procedure")
 
 
 ## Write to own flash

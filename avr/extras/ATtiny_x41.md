@@ -218,18 +218,17 @@ The ATtiny441/841 supports a Break-Before-Make mode, configurable on a per-port 
 PORTCR=(1<<BBMA)|(1<<BBMB); //BBMA controls PORTA, BBMB controls PORTB.
 ```
 
-## Tuning Constant Locations
-The ATtiny441/841, owing to the incredible power of it's oscillator, can be run at many speeds from the internal oscillator with proper calibration. We support storage of 4 calibration values. The included tuner uses these 4 locations for OSCCAL tuning values. If tuning is enabled, the OSCCAL tuning locations are checked at startup if tuning is enabled.
+#### Internal oscillator calibration
+The internal 8 MHz oscillator is not highly accurate, which is acceptable for many applications but insufficient for asynchronous protocols such as UART, where a frequency error of ±3-4% will cause communication to fail. The oscillator speed is highly voltage dependent, and is usually too fast when running the target at 5V.
 
-**ISP programming (no bootloader)**: EESAVE fuse set, stored in EEPROM
+To address this, TinyCore provides an [Oscillator calibration sketch](../libraries/TinyCore/examples/OscillatorCalibration/OscillatorCalibration.ino) that calculates a corrected OSCCAL value based on characters received over UART. Before uploading the sketch, ensure the target is running from its internal 8 MHz oscillator and that EEPROM preservation is enabled. Once uploaded, open the serial monitor at 115200 baud, select "No line ending", and repeatedly send the character `x`. After a few attempts, readable text should begin to appear in the serial monitor. Once the calibration value has stabilised, it is automatically stored in the last byte of EEPROM for future use. This value is not loaded automatically and must be applied explicitly in your sketch:
 
-| Tuning Constant         | Location EEPROM | Location Flash |
-|-------------------------|-----------------|----------------|
-| Temperature Offset      | E2END - 3       | FLASHEND - 7   |
-| Temperature Slope       | E2END - 4       | FLASHEND - 6   |
-| Tuned OSCCAL0 8 MHz/3V3 | E2END - 3       | FLASHEND - 5   |
-| Tuned OSCCAL0 8 MHz/5V  | E2END - 2       | FLASHEND - 4   |
-| Tuned OSCCAL0 12 MHz*   | E2END - 1       | FLASHEND - 3   |
-| Tuned OSCCAL0 16 MHz*   | E2END - 0       | FLASHEND - 2   |
+```cpp
+  // Check if there exists any OSCCAL value in the last EEPROM byte
+  // If not, run the oscillator tuner sketch first
+  uint8_t cal = EEPROM.read(E2END);
+  if (cal < 0xff)
+    OSCCAL0 = cal;
+```
 
-`*` Calibration at aprx. 5v is assumed and implied
+Another approach is to use the [avrCalibrate](https://github.com/felias-fogg/avrCalibrate) library, which uses a host microcontroller along with the target to perform the calibraion. avrCalibrate can also calibrate internal voltage references.
