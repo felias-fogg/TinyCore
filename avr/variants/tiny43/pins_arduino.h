@@ -20,7 +20,7 @@
 #define ATTINY43 1
 #define __AVR_ATtiny43__
 
-#define NUM_DIGITAL_PINS  (12)
+#define NUM_DIGITAL_PINS  (16)
 #define NUM_ANALOG_INPUTS ( 4)
 
 /* Basic Pin Numbering - PIN_Pxn notation is always recommended
