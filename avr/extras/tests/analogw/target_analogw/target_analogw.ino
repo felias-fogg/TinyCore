@@ -1,7 +1,7 @@
 #define WAIT 100
 #define TIMEOUT_MS 90000
 #define PULSE_MS 5
-#define INTERVAL_MS 20
+#define INTERVAL_MS 40
 #define COMPIN 0
 
 unsigned long start;
@@ -63,9 +63,13 @@ void loop()
     delay(INTERVAL_MS);
     analogWrite(pin, 50);
     delay(INTERVAL_MS);
-    analogWrite(pin, 90);
-    delay(INTERVAL_MS);
     analogWrite(pin, 100);
+    delay(INTERVAL_MS);
+    analogWrite(pin, 150);
+    delay(INTERVAL_MS);
+    analogWrite(pin, 200);
+    delay(INTERVAL_MS);
+    analogWrite(pin, 250);
     delay(INTERVAL_MS);
     pinMode(pin, INPUT);
     pin++;

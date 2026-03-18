@@ -8,7 +8,7 @@
 unsigned long start;
 // number of digital pins without the RESET pin, for ATtinyx8 only the one for the DIP footprint
 #if defined(__AVR_ATtiny48__) || defined(__AVR_ATtiny88__)
-const iopins = 23;
+const int iopins = 23;
 #else
 const int iopins = NUM_DIGITAL_PINS - 1; 
 #endif
@@ -43,10 +43,10 @@ void loop()
     phase = 3;
     start = millis();
     break;
-  case 3: /* send next PWM pin number or termination signal = iopins + 1 */
+  case 3: /* send next ADC pin number or termination signal = iopins + 1 */
     delay(150);
     while (pin < iopins) {
-      if (digitalPinToAnalogInput(pin) >= 0) break;
+      if (digitalPinToAnalogInput(pin) >= 0 && digitalPinToAnalogInput(pin) != NOT_A_PIN) break;
       pin++;
     }
     if (pin >= iopins) { // report

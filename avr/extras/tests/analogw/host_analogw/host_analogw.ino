@@ -69,8 +69,10 @@ void loop()
     pinMode(HPIN(pwm), INPUT);
     if (!waitfor(pwm, 10)) lsucc = false;
     if (!waitfor(pwm, 50)) lsucc = false;
-    if (!waitfor(pwm, 90)) lsucc = false;
     if (!waitfor(pwm,100)) lsucc = false;
+    if (!waitfor(pwm,150)) lsucc = false;
+    if (!waitfor(pwm,200)) lsucc = false;
+    if (!waitfor(pwm,250)) lsucc = false;
     delay(20);
     if (lsucc) Serial.println("PWM check OK");
     else Serial.println(F("PWM check failed"));
@@ -83,7 +85,7 @@ void loop()
   }
 }
 
-bool waitfor(int pin, int percent)
+bool waitfor(int pin, int parts)
 {
   unsigned long start = millis();
   long low, high, duty;
@@ -93,20 +95,20 @@ bool waitfor(int pin, int percent)
     high = pulseIn(HPIN(pin), HIGH, WAITFORPULSE_uS);
     low = pulseIn(HPIN(pin), LOW, WAITFORPULSE_uS);
     if (high == 0 || low == 0) continue;
-    duty = high*100/(high+low);
-    if (duty*3 >= percent-20 && duty*3 <= percent + 20) {
+    duty = high*255/(high+low);
+    if (duty >= parts-30 && duty <= parts + 30) {
       succ = true; 
     }
   }
   if (succ) { 
     high = pulseIn(HPIN(pin), HIGH, WAITFORPULSE_uS);  
     low = pulseIn(HPIN(pin), LOW, WAITFORPULSE_uS);
-    duty = high*100/(high+low);
+    duty = high*255/(high+low);
     Serial.print(F("PWM check ")); 
-    Serial.print(percent);
-    Serial.print(F("%: "));
+    Serial.print(parts);
+    Serial.print(F("p: "));
     Serial.print(duty);
-    Serial.println(F("% duty cycle"));
+    Serial.println(F("p duty cycle"));
   }
   return succ;
 }

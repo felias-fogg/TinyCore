@@ -77,7 +77,7 @@ void loop()
   case 6:
     for (i = 0; i < iopins; i++) {
       digitalWrite(i, LOW);
-      delay(100);
+      delay(200);
     }
     delay(100);
     phase = 7;

@@ -1,6 +1,6 @@
 # Test Protocol: Analog read
 
-This test only checks whether the basic functionality is there. It will check whether LOW input leads to something close to zero and HIGH leads to something close to 1023.
+This test only checks whether the basic functionality of `analogRead` is there. It will check whether LOW input leads to something close to zero and HIGH leads to something close to 1023.
 
 1. Set up the host MCU board (Uno, Nano, or Mega) and target chip/board on a breadboard. 
 2. Erase the target board, so that all I/O pins are high impedance.
