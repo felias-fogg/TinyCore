@@ -31,7 +31,7 @@ The tests in this folder each check one particular basic functionality. They are
 ATtiny26: 
 
 - analogWrite: PWM does not work on either PWM pin (9 and 11)
-- Serial /iO does not compile: ser.ino:19: undefined reference to `\__SP_H__'
+- Serial I/O does not compile: ser.ino:19: undefined reference to `\__SP_H__'
 
 ATtinyX7:
 
