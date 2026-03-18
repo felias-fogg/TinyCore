@@ -162,10 +162,9 @@ digitalWrite(0, HIGH);
 ```
 
 ### Internal oscillator calibration (OSCCAL)
-The internal 8 MHz oscillator on these microcontrollers aren't all that accurate, and is both temperature and voltage dependent. Depending on the application, it might be necessary to perform an oscillator calibration. TinyCore provides a simple [Oscillator calibration sketch](avr/libraries/TinyCore/examples/OscillatorCalibration/OscillatorCalibration.ino) that uses the incoming UART data to calibrate its clock. Read more about this in the [device spesific documentation](#supported-microcontrollers).
+The internal 8 MHz oscillator (or 16 MHz PLL) on these microcontrollers aren't all that accurate, and is both temperature and voltage dependent. Depending on the application, it might be necessary to perform an oscillator calibration. TinyCore provides a simple [Oscillator calibration sketch](avr/libraries/TinyCore/examples/OscillatorCalibration/OscillatorCalibration.ino) that uses the incoming UART data to calibrate its clock. Read more about this in the [device spesific documentation](#supported-microcontrollers).
 
 <img src="avr/extras/OSCCAL_procedure.gif" width="500">
-
 
 
 ## Write to own flash
