@@ -1,6 +1,6 @@
 // Write a value to the slave, then read it again
 #define I2CADDR 8 
-#define STRINGIFY(x) #x
+#define IASTR "8"
 
 #include <Wire.h>
 
@@ -12,7 +12,7 @@ void setup() {
   Serial.println(F("\n\r\n\rWire Master test"));
   Wire.begin(); // join I2C bus (address optional for master)
   while (1) {
-    Serial.println(F("Checking for I2C slave at addr " STRINGIFY(I2CADDR)));
+    Serial.println(F("Checking for I2C slave at addr " IASTR));
     Wire.beginTransmission(I2CADDR);
     byte error = Wire.endTransmission();
     if (error == 0) break;

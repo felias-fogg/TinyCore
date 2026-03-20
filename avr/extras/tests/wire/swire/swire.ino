@@ -1,7 +1,7 @@
 //Write slave: receive from master and mirror it back.
 
 #define I2CADDR 8 
-#define STRINGIFY(x) #x
+#define IASTR "8"
 
 #include <Wire.h>
 

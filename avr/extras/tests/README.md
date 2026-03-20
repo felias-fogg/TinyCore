@@ -18,14 +18,14 @@ The tests in this folder each check one particular basic functionality. They are
 | ------------------------------------------- | -------- | -------- | --------- | --------- | -------- | -------- | ---------- | ---------- | --------- | -------- | -------- |
 | `digitalRead()`/`digitalWrite()`on all pins | 🟢        | 🟢        | ⚪️         | 🟢         | 🟢        | 🟢        | ⚪️          | ⚪️          | ⚪️         | 🟢        | 🟢        |
 | `analogWrite()`on all supported pins        | 🟢        | ⚪️        | ⚪️         | 🟢         | 🟢        | 🟢        | ⚪️          | ⚪️          | ⚪️         | 🟢        | 🔴        |
-| `Serial.print()` and `Serial.read()`        | 🟢        | ⚪️        | ⚪️         | 🟢         | 🟡        | ⚪️        | ⚪️          | ⚪️          | ⚪️         | 🟢        | 🟢        |
+| `Serial.print()` and `Serial.read()`        | 🟢        | ⚪️        | ⚪️         | 🟢         | 🟡        | 🟢        | ⚪️          | ⚪️          | ⚪️         | 🟢        | 🟢        |
 | `analogRead()`on all supported pins         | 🟢        | ⚪️        | ⚪️         | 🟢         | 🟢        | 🟢        | ⚫️          | ⚪️          | ⚪️         | 🟢        | 🟢        |
 | SPI master                                  | 🔴        | ⚪️        | ⚪️         | ⚪️         | ⚪️        | 🟢        | ⚪️          | ⚪️          | ⚪️         | ⚪️        | ⚪️        |
 | SPI slave                                   | 🔴        | ⚪️        | ⚪️         | ⚪️         | ⚪️        | 🟢        | ⚪️          | ⚪️          | ⚪️         | ⚪️        | ⚪️        |
-| Wire master                                 | 🟢        | ⚪️        | ⚪️         | ⚪️         | ⚪️        | ⚪️        | ⚪️          | ⚪️          | ⚪️         | ⚪️        | ⚪️        |
-| Wire slave                                  | 🟢        | ⚪️        | ⚪️         | ⚪️         | ⚪️        | ⚪️        | ⚪️          | ⚪️          | ⚪️         | ⚪️        | ⚪️        |
-| Neopixel library/libraries                  | ⚪️        | ⚪️        | ⚪️         | ⚪️         | ⚪️        | ⚪️        | ⚪️          | ⚪️          | ⚪️         | ⚪️        | ⚪️        |
-| Servo library/libraries                     | ⚪️        | ⚪️        | ⚪️         | ⚪️         | ⚪️        | ⚪️        | ⚪️          | ⚪️          | ⚪️         | ⚪️        | ⚪️        |
+| Wire master                                 | 🟢        | ⚪️        | ⚪️         | ⚪️         | ⚪️        | 🟢        | ⚪️          | ⚪️          | ⚪️         | ⚪️        | ⚪️        |
+| Wire slave                                  | 🟢        | ⚪️        | ⚪️         | ⚪️         | ⚪️        | 🟢        | ⚪️          | ⚪️          | ⚪️         | ⚪️        | ⚪️        |
+| Neopixel library/libraries                  | ⚪️        | ⚪️        | ⚪️         | ⚪️         | ⚪️        | 🟢        | ⚪️          | ⚪️          | ⚪️         | ⚪️        | ⚪️        |
+| Servo library/libraries                     | ⚪️        | ⚪️        | ⚪️         | ⚪️         | ⚪️        | 🟢        | ⚪️          | ⚪️          | ⚪️         | ⚪️        | ⚪️        |
 
 🟢 = Works
 🔴 = Does not work
