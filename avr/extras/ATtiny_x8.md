@@ -1,8 +1,8 @@
 # ATtiny48/88
 
-| Pinout diagram DIP-28                   | Pinout diagram TQFP28                 | Minimal setup schematic                               |
-|-----------------------------------------|---------------------------------------|-------------------------------------------------------|
-|<img src="Pinout_x8_PU.png" width="250"> |<img src="Pinout_x8.png" width="120">  | <img src="ATtiny48_88_minimal_setup.png" width="220"> |
+| Pinout diagram DIP-28                   | Pinout diagram TQFP-32                                | Minimal setup schematic                               |
+|-----------------------------------------|-------------------------------------------------------|-------------------------------------------------------|
+|<img src="Pinout_x8_PU.png" width="250"> |<center><img src="Pinout_x8.png" width="120"></center> | <img src="ATtiny48_88_minimal_setup.png" width="220"> |
 
 
 | Specification                    | ATtiny88           | ATtiny48           |
