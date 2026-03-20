@@ -77,6 +77,10 @@
 #define PIN_A26     (PIN_PD2)
 #define PIN_A27     (PIN_PD3)
 
+#ifndef LED_BUILTIN
+  #define LED_BUILTIN (PIN_PB0)
+#endif
+
 static const uint8_t  A0 = ADC_CH(0);
 static const uint8_t  A1 = ADC_CH(1);
 static const uint8_t  A2 = ADC_CH(2);
