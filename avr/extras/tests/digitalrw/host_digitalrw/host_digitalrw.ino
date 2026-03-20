@@ -58,6 +58,7 @@ void loop()
         Serial.println(i);
         if (lowcount++ > 10) 
           report_failure();
+        delay(1);
         return;
       }
     }

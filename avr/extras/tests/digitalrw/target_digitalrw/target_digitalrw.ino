@@ -6,7 +6,7 @@
 unsigned long start;
 // number of digital pins without the RESET pin, for ATtinyx8 only the one for the DIP footprint
 #if defined(__AVR_ATtiny48__) || defined(__AVR_ATtiny88__)
-const iopins = 23;
+const int iopins = 23;
 #else
 const int iopins = NUM_DIGITAL_PINS - 1; 
 #endif

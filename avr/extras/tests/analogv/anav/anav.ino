@@ -29,8 +29,11 @@ void loop()
   long adc;
 
   for (pin=0; pin < iopins; pin++) {
-    if (digitalPinToAnalogInput(pin) >= 0 && digitalPinToAnalogInput(pin) != NOT_A_PIN) {
+    //if (pin >= 17 && pin <= 22) {
+    if ((((pin) >= 17 && (pin) <= 22) ? ((pin)-17):NOT_A_PIN) != NOT_A_PIN) {
       adc = analogRead(pin);
+      Serial.print(pin);
+      Serial.print(":");
       Serial.print((adc*VCC)/1023);
       Serial.print(" ");
       Serial.flush();
