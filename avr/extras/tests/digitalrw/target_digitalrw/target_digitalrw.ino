@@ -4,7 +4,8 @@
 #define COMPIN 0
 
 unsigned long start;
-// number of digital pins without the RESET pin, for ATtinyx8 only the one for the DIP footprint
+// number of digital pins without the RESET pin (usually the pin with the highest number),
+// for ATtinyx8 only the one for the DIP footprint
 #if defined(__AVR_ATtiny48__) || defined(__AVR_ATtiny88__)
 const int iopins = 23;
 #else
@@ -130,7 +131,7 @@ void loop()
 
 void report_failure()
 {
-  for (int i = 0; i < iopins; i++) pinMode(i, INPUT);
+  for (int i = 0; i < iopins; i++) pinMode(realpin(i), INPUT);
   while (1);
 }
 
