@@ -2,8 +2,8 @@
 #include "pins_arduino.h"
 #include "init_timers.h"
 
-// This function is ran before main(), but after setup_millis() and makes sure timer0 gets set up correctly
-void timer_pwm_setup(void) __attribute__ ((naked)) __attribute__ ((used)) __attribute__ ((section (".init7")));
+// This function is ran before main() to make sure the PWM timers gets set up correctly
+void timer_pwm_setup(void) __attribute__ ((naked)) __attribute__ ((used)) __attribute__ ((section (".init6")));
 
 void timer_pwm_setup() {
   init_timer0();
