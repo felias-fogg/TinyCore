@@ -1,6 +1,6 @@
 #include <avr/interrupt.h>
 #include "wiring_private.h"
-#include "init_timer0.h"
+#include "init_timers.h"
 
 
 #define MILLIS_ENABLED
@@ -60,19 +60,18 @@ void init_millis() {
     TCCR1B = (1 << WGM12) | (MillisTimer_Prescale_Index << CS10);
   #endif
 
-
-    // Enable the overflow interrupt (this is the basic system tic-toc for millis)
-    #if defined(TIMSK) && defined(TOIE0) && (TIMER_TO_USE_FOR_MILLIS == 0)
-      TIMSK |= (1 << TOIE0); //sbi(TIMSK,TOIE0);
-    #elif defined(TIMSK0) && defined(TOIE0) && (TIMER_TO_USE_FOR_MILLIS == 0)
-      TIMSK0 |= (1 << TOIE0); //sbi(TIMSK0,TOIE0);
-    #elif defined(TIMSK) && defined(TOIE1) && (TIMER_TO_USE_FOR_MILLIS == 1)
-      TIMSK |= (1 << TOIE1); //sbi(TIMSK,TOIE1);
-    #elif defined(TIMSK1) && defined(TOIE1) && (TIMER_TO_USE_FOR_MILLIS == 1)
-      TIMSK1 |= (1 << TOIE1); //sbi(TIMSK1,TOIE1);
-    #else
-      #error Millis() Timer overflow interrupt not set correctly
-    #endif
+  // Enable the overflow interrupt (this is the basic system tic-toc for millis)
+  #if defined(TIMSK) && defined(TOIE0) && (TIMER_TO_USE_FOR_MILLIS == 0)
+    TIMSK |= (1 << TOIE0); //sbi(TIMSK,TOIE0);
+  #elif defined(TIMSK0) && defined(TOIE0) && (TIMER_TO_USE_FOR_MILLIS == 0)
+    TIMSK0 |= (1 << TOIE0); //sbi(TIMSK0,TOIE0);
+  #elif defined(TIMSK) && defined(TOIE1) && (TIMER_TO_USE_FOR_MILLIS == 1)
+    TIMSK |= (1 << TOIE1); //sbi(TIMSK,TOIE1);
+  #elif defined(TIMSK1) && defined(TOIE1) && (TIMER_TO_USE_FOR_MILLIS == 1)
+    TIMSK1 |= (1 << TOIE1); //sbi(TIMSK1,TOIE1);
+  #else
+    #error Millis() Timer overflow interrupt not set correctly
+  #endif
 }
 
 #ifndef CORRECT_EXACT_MICROS
@@ -112,13 +111,10 @@ void init_millis() {
 #endif
     f += FRACT_INC;
 
-    if (f >= FRACT_MAX)
-    {
+    if (f >= FRACT_MAX) {
       f -= FRACT_MAX;
       m += MILLIS_INC + 1;
-    }
-    else
-    {
+    } else {
       m += MILLIS_INC;
     }
 

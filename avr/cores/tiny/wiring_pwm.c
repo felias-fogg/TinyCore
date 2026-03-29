@@ -1,15 +1,21 @@
 #include "wiring_private.h"
 #include "pins_arduino.h"
-#include "init_timer0.h"
+#include "init_timers.h"
 
 // This function is ran before main(), but after setup_millis() and makes sure timer0 gets set up correctly
-void timer0_setup(void) __attribute__ ((naked)) __attribute__ ((used)) __attribute__ ((section (".init7")));
+void timer_pwm_setup(void) __attribute__ ((naked)) __attribute__ ((used)) __attribute__ ((section (".init7")));
 
-void timer0_setup() {
+void timer_pwm_setup() {
   init_timer0();
+  init_timer1();
+  #if defined(__AVR_ATtiny841__) || defined(__AVR_ATtiny441__)
+    TOCPMSA0 = 0b00010000; // PA4: OC0A, PA3: OC1B, PA2: N/A,  PA1: N/A
+    TOCPMSA1 = 0b10100100; // PB2: OC2A, PA7: OC2B, PA6: OC1A, PA5: OC0B
+  #elif defined(__AVR_ATtiny828__)
+    TOCPMSA0 = 0b11100100;  // PC3: OC1B, PC2: OC1A, PC1: OC0B, PC0 OC0A
+    TOCPMSA1 = 0b11001001;  // PC7: OC1B, PC6: OC0A, PC5: OC1A, PC4,OC0B
+  #endif
 }
-
-
 
 void analogWrite(uint8_t pin, int val) {
   if(__builtin_constant_p(pin)) {
@@ -17,15 +23,11 @@ void analogWrite(uint8_t pin, int val) {
     if (pin >= NUM_DIGITAL_PINS) badArg("analogWrite to constant pin number that is not a valid pin");
   }
   // let's wait until the end to set pinMode - why output an unknown value for a few dozen clock cycles while we sort out the pwm channel?
-  if (val <= 0) {
+  if (val <= 0)
     digitalWrite(pin, LOW);
-  }
   else if (val >= 255)
-  {
     digitalWrite(pin, HIGH);
-  }
-  else
-  {
+  else {
     uint8_t timer = digitalPinToTimer(pin);
     #if defined(TOCPMCOE)
       if (timer) {
@@ -37,21 +39,17 @@ void analogWrite(uint8_t pin, int val) {
             OCR0A = val;
             break;
           case TIMER1A:
-            TCCR1A |= (1 << COM1A1);
             OCR1A = val;
             break;
           case TIMER1B:
-            TCCR1A |= (1 << COM1B1);
             OCR1B = val;
             break;
           #if defined(TCCR2A)
             // only test for these cases on x41
             case TIMER2A:
-              TCCR2A |= (1 << COM2A1);
               OCR2A = val;
               break;
             case TIMER2B:
-              TCCR2A |= (1 << COM2B1);
               OCR2B = val;
               break;
             //end of x41-only
@@ -66,10 +64,6 @@ void analogWrite(uint8_t pin, int val) {
         // In any event we can now switch OE for that pin.
         bitmask >>= 4;
         TOCPMCOE |= (1 << bitmask);
-        #if defined(__AVR_ATtiny841__) || defined(__AVR_ATtiny441__)
-          TOCPMSA0 = 0b00010000; // PA4: OC0A, PA3: OC1B, PA2: N/A,  PA1: N/A
-          TOCPMSA1 = 0b10100100; // PB2: OC2A, PA7: OC2B, PA6: OC1A, PA5: OC0B
-        #endif
       } else // has to end with this, from if (timer)
     #else //Non-TOCPMCOE implementation
       // Timer0 has a output compare channel A (most parts)
@@ -160,11 +154,10 @@ void analogWrite(uint8_t pin, int val) {
       #endif
     #endif // end non-TOCPMCOE implementation
     {
-      if (val < 128) {
+      if (val < 128)
         digitalWrite(pin, LOW);
-      } else {
+      else
         digitalWrite(pin, HIGH);
-      }
     }
   }
   pinMode(pin,OUTPUT);
