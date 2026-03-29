@@ -18,12 +18,15 @@
 #define DEFAULT (0)
 #endif
 
-// This function is ran before main() to make sure the the ADC gets set up correctly
-void adc_setup(void) __attribute__ ((naked)) __attribute__ ((used)) __attribute__ ((section (".init6")));
+// ADC is present
+#if defined(ADCSRA)
+  // This function is ran before main() to make sure the the ADC gets set up correctly
+  void adc_setup(void) __attribute__ ((naked)) __attribute__ ((used)) __attribute__ ((section (".init6")));
 
-void adc_setup() {
-  ADCSRA = (ADC_ARDUINO_PRESCALER << ADPS0) | (1 << ADEN);
-}
+  void adc_setup() {
+    ADCSRA = (ADC_ARDUINO_PRESCALER << ADPS0) | (1 << ADEN);
+  }
+#endif
 
 /* These are pre-shifted, as are the constants
  * Don't calculate at runtime what you could have
