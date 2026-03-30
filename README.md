@@ -4,11 +4,12 @@ An Arduino core for classic ATtiny chips, with the option of running the [Urboot
 Arduino IDE v1.8 and v2.x supported!
 
 TinyCore is a fork of the [ATTinyCore 2.0.0 branch](https://github.com/SpenceKonde/ATTinyCore). It focuses on improving the overall user experience and other quality-of-life improvements. Compared to ATtinyCore, TinyCore has:  
-* Simplified Arduino IDE Tools menu
+* Improved and less cluttered Arduino IDE Tools menu
 * Rock-solid bootloader support using [Urboot](https://github.com/stefanrueger/urboot) in favour of Optiboot
 * Hardware debugging support using [PyAvrOCD](https://pyavrocd.io)
 * No Digispark (Micronucleus) support due to [USB timing costraints and the poor user experience caused by this](https://github.com/SpenceKonde/ATTinyCore?tab=readme-ov-file#vusb-is-not-supported-for-usb-functionality-within-the-sketch)
-* Revised documentation
+* Revised and improved documentation
+* [Systematic testing of core functionality](/avr/extras/tests/README.md) on real hardware
 
 # Table of contents
 * [Supported microcontrollers](#supported-microcontrollers)
@@ -26,7 +27,7 @@ TinyCore is a fork of the [ATTinyCore 2.0.0 branch](https://github.com/SpenceKon
   - [Manual Installation](#manual-installation)
   - [Arduino CLI Installation](#arduino-cli-installation)
   - [PlatformIO](#platformio)
-* **[Getting started with TinyCore](#getting-started-with-TinyCore)**
+* **[Getting started with TinyCore](#getting-started-with-tinycore)**
 * [SPI, i2c and UART](#spi-i2c-and-uart)
 * [ADC](#adc)
 * [Neopixel library](#neopixel-library)
