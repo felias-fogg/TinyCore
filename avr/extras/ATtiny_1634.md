@@ -35,8 +35,8 @@ The ATtiny1634 is one of the larger classic tinyAVR devices, offering 16 KiB of 
 | Interfaces                        | 2×UART, USI, I2C slave |
 | Int. Oscillator (MHz)             | 8, 4, 2, 1             |
 | Int. ULP Oscillator               | 128 kHz                |
-| External Crystal (up to 16 MHz)   | All standard           |
-| External Clock (up to 16 MHz)     | All standard           |
+| External Crystal (up to 12 MHz)   | All standard           |
+| External Clock (up to 12 MHz)     | All standard           |
 | LED_BUILTIN                       | PIN_PC0                |
 
 ### Urboot bootloader
@@ -82,9 +82,6 @@ TC0 is always run in Fast PWM mode: We use TC0 for millis, and phase correct mod
 | 8  MHz | 8/64/256=    488 Hz |  8/64/256=     488 Hz |                              |
 | >8 MHz | x/64/256= 61 * x Hz |  x/64/256=  61 * x Hz |                              |
 | 12 MHz | 12/64/256=   735 Hz | 12/64/256=     735 Hz |                              |
-| 16 MHz | 16/64/256=   977 Hz | 16/64/256=     977 Hz |                              |
-|>16 MHz | x/64/256= 61 * x Hz |  x/64/512=  31 * x Hz | Phase correct TC1            |
-| 20 MHz | 20/64/256=  1220 Hz | 20/64/512=     610 Hz | Phase correct TC1            |
 
 Phase correct PWM counts up to 255, turning the pin off as it passes the compare value, updates it's double-buffered registers at TOP, then it counts down to 0, flipping the pin back as is passes the compare value. This is considered preferable for motor control applications, though the "Phase and Frequency Correct" mode is better if the period is ever adjusted by a large amount at a time, because it updates the doublebuffered registers at BOTTOM, and thus produces a less problematic glitch in the duty cycle, but doesn't have any modes that don't require setting ICR1 too.
 
