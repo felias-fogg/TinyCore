@@ -1,29 +1,13 @@
 # ATtiny26
 
+The ATtiny26 is the predecessor to the ATtiny261/461/861 family, sharing a similar architecture and differential ADC. As one of the earliest ATtiny devices, its peripheral set is less advanced than its successors.
+
 | Pinout diagram                       | Minimal setup schematic                            |
 |--------------------------------------|----------------------------------------------------|
 |<img src="Pinout_26.png" width="350"> | <img src="ATtiny26_minimal_setup.png" width="250"> |
 
-
-| Specification                    | ATtiny26                |
-|----------------------------------|-------------------------|
-| Bootloader support               | No                      |
-| Flash available user             | 2048 bytes              |
-| RAM                              | 128 bytes               |
-| EEPROM                           | 128 bytes               |
-| GPIO Pins                        | 16 (15 usable)          |
-| ADC Channels                     | 11                      |
-| Differential ADC                 | 12 pairs, 4 with 20x gain for offset, 1x-only channel, others selectable 1x/20x |
-| PWM Channels                     | 2                       |
-| Interfaces                       | USI, high-speed timer   |
-| Int. Oscillator (MHz)            | 16, 8, 4, 2, 1          |
-| External Crystal                 | All Standard            |
-| External Clock                   | All Standard            |
-| Int. WDT Oscillator              | 128 kHz                 |
-| LED_BUILTIN                      | PIN_PB6                 |
-
 ## Table of contents
-- [Overview](#overview)
+- [Specifications](#specifications)
 - [No bootloader support](#no-bootloader-is-possible)
 - [Internal oscillator calibration](#internal-oscillator-calibration)
 - [Features](#features)
@@ -39,8 +23,24 @@
   - [Differential ADC](#differential-adc)
   - [ADC differential pair matrix](#adc-differential-pair-matrix)
 
-### Overview
-The ATtiny26 is the predecessor to the ATtiny261/461/861 family, sharing a similar architecture and differential ADC. As one of the earliest ATtiny devices, its peripheral set is less advanced than its successors.
+### Specifications
+
+| Specification                     | ATtiny26                                                         |
+|-----------------------------------|------------------------------------------------------------------|
+| Bootloader support                | No                                                               |
+| Flash available (user)            | 2048 bytes                                                       |
+| RAM                               | 128 bytes                                                        |
+| EEPROM                            | 128 bytes                                                        |
+| GPIO Pins                         | 16 (incl RST)                                                    |
+| ADC Channels                      | 11                                                               |
+| Differential ADC                  | 12 pairs, 4 with 20x gain for offset, 1x-only and 1x/20x pairs   |
+| PWM Channels                      | 2                                                                |
+| Interfaces                        | USI, high-speed timer                                            |
+| Int. Oscillator (MHz)             | 16, 8, 4, 2, 1                                                   |
+| External Crystal                  | All standard                                                     |
+| External Clock                    | All standard                                                     |
+| Int. WDT Oscillator               | 128 kHz                                                          |
+| LED_BUILTIN                       | PIN_PB6                                                          |
 
 ### No bootloader support
 Self programming is not supported on these parts, making it impossible to use a bootloader.

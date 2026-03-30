@@ -1,30 +1,13 @@
 # ATtiny43U
 
+The ATtiny43 is an unusual device with an otherwise unremarkable peripheral set, distinguished by a single standout feature: a built-in boost converter that allows operation from as little as 1.1V at startup, continuing down to 0.7V, enabling a complete project to run from a single alkaline battery. The boost converter generates approximately 3V during active operation and can supply up to 30mA for peripherals. When the boost converter is in use, the clock speed must not exceed 4 MHz. The "Internal 4MHz" clock option configures the fuses to start at 1 MHz and switch to 4 MHz during startup. Refer to the datasheet for the required external components, PCB layout guidelines, and further details of boost converter operation.
+
 | Pinout diagram                       | Minimal setup schematic                             |
 |--------------------------------------|-----------------------------------------------------|
 |<img src="Pinout_43.png" width="350"> | <img src="ATtiny43U_minimal_setup.png" width="250"> |
 
-
-| Specification                    | ATtiny43U          |
-|----------------------------------|--------------------|
-| Bootloader (occupies 256 bytes)  | Urboot             |
-| Uploading uses                   | ISP/SPI pins       |
-| Flash available user             | 3840 / 4096 bytes  |
-| RAM                              | 256 bytes          |
-| EEPROM                           | 64 bytes           |
-| GPIO Pins                        | 16 (incl RST)      |
-| ADC Channels                     | 4                  |
-| Differential ADC                 | No                 |
-| PWM Channels                     | 4                  |
-| Interfaces                       | USI                |
-| Int. Oscillator (MHz)            | 8, 4, 2, 1         |
-| External Crystal                 | Not supported      |
-| External Clock                   | All standard       |
-| Int. WDT Oscillator              | 128 kHz            |
-| LED_BUILTIN                      | PIN_PA5            |
-
 ## Table of contents
-- [Overview](#overview)
+- [Specifications](#specifications)
 - [Urboot bootloader](#urboot-bootloader)
 - [Boost converter operation](#boost-converter-operation)
 - [Internal oscillator calibration](#internal-oscillator-calibration)
@@ -38,8 +21,26 @@
   - [ADC Reference options](#adc-reference-options)
   - [Temperature measurement](#temperature-measurement)
 
-### Overview
-The ATtiny43 is an unusual device with an otherwise unremarkable peripheral set, distinguished by a single standout feature: a built-in boost converter that allows operation from as little as 1.1V at startup, continuing down to 0.7V, enabling a complete project to run from a single alkaline battery. The boost converter generates approximately 3V during active operation and can supply up to 30mA for peripherals. When the boost converter is in use, the clock speed must not exceed 4 MHz. The "Internal 4MHz" clock option configures the fuses to start at 1 MHz and switch to 4 MHz during startup. Refer to the datasheet for the required external components, PCB layout guidelines, and further details of boost converter operation.
+### Specifications
+
+| Specification                     | ATtiny43U          |
+|-----------------------------------|--------------------|
+| Bootloader (occupies 256 bytes)   | Urboot             |
+| Uploading uses                    | ISP/SPI pins       |
+| Flash available (no bootloader)   | 4096 bytes         |
+| Flash available (with bootloader) | 3840 bytes         |
+| RAM                               | 256 bytes          |
+| EEPROM                            | 64 bytes           |
+| GPIO Pins                         | 16 (incl RST)      |
+| ADC Channels                      | 4                  |
+| Differential ADC                  | No                 |
+| PWM Channels                      | 4                  |
+| Interfaces                        | USI                |
+| Int. Oscillator (MHz)             | 8, 4, 2, 1         |
+| External Crystal                  | Not supported      |
+| External Clock                    | All standard       |
+| Int. WDT Oscillator               | 128 kHz            |
+| LED_BUILTIN                       | PIN_PA5            |
 
 ### Urboot bootloader
 This core uses the [Urboot bootloader](https://github.com/stefanrueger/urboot/) for the ATtiny261/461/861, a modern replacement that addresses the fundamental shortcomings of Optiboot on these parts. The bootloader is configured to occupy only 256 bytes, less than half of what Optiboot required, leaving 1792, 3840, or 7936 bytes available for user code on the ATtiny261, 461, and 861 respectively. Urboot can be reconfigured to include additional features at the cost of increased flash usage, though the 256-byte variant used here covers the needs of most users. These chips does not have a hardware serial port, so Urboot is configured to use software-based UART.

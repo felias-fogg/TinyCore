@@ -1,30 +1,13 @@
 # ATtiny25/45/85
 
+The ATtiny25/45/85 family is arguably the most popular classic tinyAVR series, widely used in small and space-constrained designs. Available in an 8-pin DIP, SOIC-8 and QFN-20 packages, these parts pack a USI peripheral, a differential ADC, an on-chip PLL, and a high-speed Timer1 into a minimal footprint. The three family members differ only in flash and RAM size: 2/4/8 KiB of flash and 128/256/512 bytes of RAM respectively. They do not feature a hardware UART; serial communication relies on the built-in software serial implementation.
+
 | Pinout diagram                        | Minimal setup schematic                                  |
 |---------------------------------------|----------------------------------------------------------|
 |<img src="Pinout_x5.png" width="360">  | <img src="ATtiny25_45_85_minimal_setup.png" width="240"> |
 
-
-| Specification                    | ATtiny85         | ATtiny45         | ATtiny25         |
-|----------------------------------|------------------|------------------|------------------|
-| Bootloader (occupies 256 bytes)  | Urboot           | Urboot           | Urboot           |
-| Flash available user             | 7936 / 8192 bytes| 3850 / 4096 bytes| 1792 / 2048 bytes|
-| RAM                              | 512 bytes        | 256 bytes        | 128 bytes        |
-| EEPROM                           | 512 bytes        | 256 bytes        | 128 bytes        |
-| GPIO Pins                        | 5 + RESET        | 5 + RESET        | 5 + RESET        |
-| ADC Channels                     | 4 (incl RST)     | 4 (incl RST)     | 4 (incl RST)     |
-| Differential ADC                 | 1/20x gain       | 1/20x gain       | 1/20x gain       |
-| PWM Channels                     | 3: PB0, PB1/2    | 3: PB0, PB1/2    | 3: PB0, PB1/2    |
-| Interfaces                       | USI              | USI              | USI              |
-| Bootloader pins (RX/TX)          | PB1/PB0          | PB1/PB0          | PB1/PB0          |
-| Int. Oscillator or PLL (MHz)     | 16, 8, 4, 2, 1   | 16, 8, 4, 2, 1   | 16, 8, 4, 2, 1   |
-| External Crystal                 | All standard     | All standard     | All standard     |
-| External Clock                   | All standard     | All standard     | All standard     |
-| Int. WDT Oscillator              | 128 kHz          | 128 kHz          | 128 kHz          |
-| LED_BUILTIN                      | PIN_PB2          | PIN_PB2          | PIN_PB2          |
-
 ## Table of contents
-- [Overview](#overview)
+- [Specifications](#specifications)
 - [Urboot bootloader](#urboot-bootloader)
 - [LED_BUILTIN is on PB2](#led_builtin-is-on-pb2)
 - [Internal oscillator calibration](#internal-oscillator-calibration)
@@ -45,9 +28,25 @@
   - [Differential channels](#differential-channels)
   - [Temperature measurement](#temperature-measurement)
 
+### Specifications
 
-### Overview
-The ATtiny25/45/85 family is arguably the most popular classic tinyAVR series, widely used in small and space-constrained designs. Available in an 8-pin DIP, SOIC-8 and QFN-20 packages, these parts pack a USI peripheral, a differential ADC, an on-chip PLL, and a high-speed Timer1 into a minimal footprint. The three family members differ only in flash and RAM size: 2/4/8 KiB of flash and 128/256/512 bytes of RAM respectively. They do not feature a hardware UART; serial communication relies on the built-in software serial implementation.
+| Specification                     | ATtiny25/45/85        |
+|-----------------------------------|-----------------------|
+| Bootloader (occupies 256 bytes)   | Urboot                |
+| Flash available (no bootloader)   | 2048/4096/8192 bytes  |
+| Flash available (with bootloader) | 1792/3840/7936 bytes  |
+| RAM                               | 128/256/512 bytes     |
+| EEPROM                            | 128/256/512 bytes     |
+| GPIO Pins                         | 5 + RESET             |
+| ADC Channels                      | 4 (incl RST)          |
+| Differential ADC                  | 1x/20x gain           |
+| PWM Channels                      | 3                     |
+| Interfaces                        | USI                   |
+| Int. Oscillator or PLL (MHz)      | 16, 8, 4, 2, 1        |
+| External Crystal                  | All standard          |
+| External Clock                    | All standard          |
+| Int. WDT Oscillator               | 128 kHz               |
+| LED_BUILTIN                       | PIN_PB2               |
 
 ### Urboot bootloader
 This core uses the [Urboot bootloader](https://github.com/stefanrueger/urboot/) for the ATtiny25/45/85, a modern replacement that addresses the fundamental shortcomings of Optiboot on these parts. The bootloader is configured to occupy only 256 bytes, less than half of what Optiboot required, leaving 1792, 3840, or 7936 bytes available for user code on the ATtiny25, 45, and 85 respectively. Urboot can be reconfigured to include additional features at the cost of increased flash usage, though the 256-byte variant used here covers the needs of most users. These chips does not have a hardware serial port, so Urboot is configured to use software-based UART.

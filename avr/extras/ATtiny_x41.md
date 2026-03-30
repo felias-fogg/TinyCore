@@ -1,29 +1,13 @@
 # ATtiny441/841
 
+The ATtiny441/841 is an enhanced successor to the ATtiny24/44/84 family, sharing the same 14-pin footprint while offering a significantly expanded peripheral set. Most notably, it features two hardware UARTs, hardware SPI, a hardware I2C slave, and six PWM channels, which is a substantial step up from the USI-based communication of its predecessor. Its ADC is among the most capable in the classic tinyAVR lineup, supporting 12 input channels, differential pairs with selectable 1x, 20x, and 100x gain, and three internal reference voltages. Additional GPIO features include a dedicated pull-up enable register, enhanced sink capability on two pins, and timer PWM remapping. The ATtiny441 and ATtiny841 differ only in flash and RAM size: 4/8 KB of flash and 256/512 bytes of RAM respectively. Both are available in surface-mount packages only.
+
 | Pinout diagram                        | Minimal setup schematic                                 |
 |---------------------------------------|---------------------------------------------------------|
 |<img src="Pinout_x41.png" width="320"> | <img src="ATtiny441_841_minimal_setup.png" width="240"> |
 
-
-| Specification                    | ATtiny841                | ATtiny441                |
-|----------------------------------|--------------------------|--------------------------|
-| Bootloader (occupies 256 bytes)  | Urboot                   | Urboot                   |
-| Flash available user             | 7936 / 8192 bytes        | 3840 / 4096 bytes        |
-| RAM                              | 512 bytes                | 256 bytes                |
-| EEPROM                           | 512 bytes                | 256 bytes                |
-| GPIO Pins                        | 11 + RESET               | 11 + RESET               |
-| ADC Channels                     | 12 (incl RST)            | 12 (incl RST)            |
-| Differential ADC                 | Yes                      | Yes                      |
-| PWM Channels                     | 6                        | 6                        |
-| Interfaces                       | 2× USART, SPI, i2c slave | 2× USART, SPI, i2c slave |
-| Int. Oscillator (MHz)            | 8, 4, 2, 1               | 8, 4, 2, 1               |
-| External Crystal                 | All standard             | All standard             |
-| External Clock                   | All standard             | All standard             |
-| LED_BUILTIN                      | PIN_PB2                  | PIN_PB2                  |
-
-
 ## Table of contents
-- [Overview](#overview)
+- [Specifications](#specifications)
 - [Urboot bootloader](#urboot-bootloader)
 - [Internal oscillator calibration](#internal-oscillator-calibration)
 - [Features](#features)
@@ -44,9 +28,24 @@
   - [Enhanced sink capability on PA5 and PA7](#enhanced-sink-capability-on-pa5-and-pa7)
   - [Break-before-make](#break-before-make)
 
+### Specifications
 
-### Overview
-The ATtiny441/841 is an enhanced successor to the ATtiny24/44/84 family, offering pin compatibility and a significantly expanded peripheral set at a modest price premium. It is available in surface mount packages only. 
+| Specification                     | ATtiny441/841            |
+|-----------------------------------|--------------------------|
+| Bootloader (occupies 256 bytes)   | Urboot                   |
+| Flash available (no bootloader)   | 4096/8192 bytes          |
+| Flash available (with bootloader) | 3840/7936 bytes          |
+| RAM                               | 256/512 bytes            |
+| EEPROM                            | 256/512 bytes            |
+| GPIO Pins                         | 11 + RESET               |
+| ADC Channels                      | 12 (incl RST)            |
+| Differential ADC                  | Yes, 1x/20x/100x gain    |
+| PWM Channels                      | 6                        |
+| Interfaces                        | 2× UART, SPI, I2C slave  |
+| Int. Oscillator (MHz)             | 8, 4, 2, 1               |
+| External Crystal                  | All standard             |
+| External Clock                    | All standard             |
+| LED_BUILTIN                       | PIN_PB2                  |
 
 ### Urboot bootloader
 This core uses the [Urboot bootloader](https://github.com/stefanrueger/urboot/) for the ATtiny441/841, a modern replacement that addresses the fundamental shortcomings of Optiboot on these parts. The bootloader is configured to occupy only 256 bytes, less than half of what Optiboot required, leaving 3840 or 7936 bytes available for user program. Urboot can be reconfigured to include additional features at the cost of increased flash usage, though the 256-byte variant used here covers the needs of most users. These chips have two hardware serial port, so Urboot can be configured to use either.

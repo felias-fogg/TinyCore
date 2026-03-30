@@ -1,28 +1,13 @@
 # ATtiny2313/2313A/4313
 
+The ATtiny2313/4313 are one of the older chips in the ATtiny lineup. They have a hardware serial port and USI (Universal Serial Interface), but does not have an analog to digital converter. The ATtiny2313 (non-A) does not have PCINT interrupts on all pins, and you have to be spesific about if you're using the ATtiny2313 or ATtiny2313A for hardware debugging. Read more about the differences between these two chips [here](https://ww1.microchip.com/downloads/en/Appnotes/doc8261.pdf).
+
 | Pinout diagram                         | Minimal setup schematic                                   |
 |----------------------------------------|-----------------------------------------------------------|
 |<img src="Pinout_x313.png" width="250"> | <img src="ATtiny2313_4313_minimal_setup.png" width="260"> |
 
-
-| Specification                    | ATtiny4313         | ATtiny2313/A       |
-|----------------------------------|--------------------|--------------------|
-| Bootloader (occupies 256 bytes)  | Urboot             | Urboot             |
-| Flash available user             | 3840 / 4096 bytes  | 1792 / 2048 bytes  |
-| RAM                              | 256 bytes          | 128 bytes          |
-| EEPROM                           | 64 bytes           | 64 bytes           |
-| GPIO Pins                        | 17 + RESET         | 17 + RESET         |
-| ADC Channels                     | None               | None               |
-| PWM Channels                     | 4                  | 4                  |
-| Interfaces                       | USI, USART         | USI, USART         |
-| Int. Oscillator (MHz)            | 8, 4, 2, 1         | 8, 4, 2, 1         |
-| External Crystal                 | All standard       | All standard       |
-| External Clock                   | All standard       | All standard       |
-| Int. WDT Oscillator              | 128 kHz            | 128 kHz            |
-| LED_BUILTIN                      | PIN_PB4            | PIN_PB4            |
-
 ## Table of contents
-- [Overview](#overview)
+- [Specifications](#specifications)
 - [Urboot bootloader](#urboot-bootloader)
 - [Internal oscillator calibration](#internal-oscillator-calibration)
 - [Features](#features)
@@ -34,9 +19,24 @@
   - [Servo support](#servo-support)
   - [There is no ADC](#there-is-no-adc)
 
+### Specifications
 
-### Overview
-The ATtiny2313/4313 are one of the older chips in the ATtiny lineup. They have a hardware serial port and USI (Universal Serial Interface), but does not have an analog to digital converter. The ATtiny2313 (non-A) does not have PCINT interrupts on all pins, and you have to be spesific about if you're using the ATtiny2313 or ATtiny2313A for hardware debugging. Read more about the differences between these two chips [here](https://ww1.microchip.com/downloads/en/Appnotes/doc8261.pdf).
+| Specification                     | ATtiny2313/2313A/4313  |
+|-----------------------------------|------------------------|
+| Bootloader (occupies 256 bytes)   | Urboot                 |
+| Flash available (no bootloader)   | 2048/4096 bytes        |
+| Flash available (with bootloader) | 1792/3840 bytes        |
+| RAM                               | 128/256 bytes          |
+| EEPROM                            | 64/64 bytes            |
+| GPIO Pins                         | 17 + RESET             |
+| ADC Channels                      | None                   |
+| PWM Channels                      | 4                      |
+| Interfaces                        | USI, USART             |
+| Int. Oscillator (MHz)             | 8, 4, 2, 1             |
+| External Crystal                  | All standard           |
+| External Clock                    | All standard           |
+| Int. WDT Oscillator               | 128 kHz                |
+| LED_BUILTIN                       | PIN_PB4                |
 
 ### Urboot bootloader
 This core uses the [Urboot bootloader](https://github.com/stefanrueger/urboot/) for the ATtiny2313/4313, a modern replacement that addresses the fundamental shortcomings of Optiboot on these parts. The bootloader is configured to occupy only 256 bytes, less than half of what Optiboot required, leaving 1792 or 3840 bytes available for user program. Urboot can be reconfigured to include additional features at the cost of increased flash usage, though the 256-byte variant used here covers the needs of most users. These chips have a hardware serial port, UART0, so Urboot is configured to use this.

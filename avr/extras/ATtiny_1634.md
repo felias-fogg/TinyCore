@@ -1,29 +1,13 @@
 # ATtiny1634/R
 
+The ATtiny1634 is one of the larger classic tinyAVR devices, offering 16 KiB of flash, 18 GPIO pins (incl. RST), two hardware UARTs, and a USI peripheral for I2C and SPI. It is well suited to applications that require multiple serial interfaces without stepping up to a full ATmega. The chip is available in 20-pin SOIC and QFN packages. Officially it does not support an external crystal above 12 MHz, and its internal oscillator may require calibration for reliable UART communication. Note that the ATtiny1634R has a more accurate internal oscillator.
+
 | Pinout diagram                         | Minimal setup schematic                              |
 |----------------------------------------|------------------------------------------------------|
 |<img src="Pinout_1634.png" width="310"> | <img src="ATtiny1634_minimal_setup.png" width="290"> |
 
-
-| Specification                    | ATtiny1634             |
-|----------------------------------|------------------------|
-| Bootloader (occupies 256 bytes)  | Urboot                 |
-| Flash available user             | 16128 / 16384 bytes    |
-| RAM                              | 1024 bytes             |
-| EEPROM                           | 256 bytes              |
-| GPIO Pins                        | 18 (incl RST)          |
-| ADC Channels                     | 12                     |
-| PWM Channels                     | 4                      |
-| Interfaces                       | 2xUART, USI, i2c slave |
-| Int. Oscillator (MHz)            | 8, 4, 2, 1             |
-| Int. ULP Oscillator              | 128 kHz                |
-| External Crystal (up to 16 MHz)  | All standard           |
-| External Clock(up to 16 MHz)     | All standard           |
-| LED_BUILTIN                      | PIN_PC0                |
-
-
 ## Table of contents
-- [Overview](#overview)
+- [Specifications](#specifications)
 - [Urboot bootloader](#urboot-bootloader)
 - [Internal oscillator calibration](#internal-oscillator-calibration)
 - [Features](#features)
@@ -36,9 +20,24 @@
   - [ADC Reference options](#adc-reference-options)
   - [Workaround for PD3 Input Errata](#workaround-for-pd3-input-errata)
 
+### Specifications
 
-### Overview
-The ATtiny1634 is one of the larger classic tinyAVR devices, offering 16 KiB of flash, 18 GPIO pins (incl. RST), two hardware UARTs, and a USI peripheral for I2C and SPI. It is well suited to applications that require multiple serial interfaces without stepping up to a full ATmega. The chip is available in 20-pin SOIC and QFN packages. Officially it does not support an external crystal above 12 MHz, and its internal oscillator may require calibration for reliable UART communication. Note that the ATtiny1634R has a more accurate internal oscillator.
+| Specification                     | ATtiny1634             |
+|-----------------------------------|------------------------|
+| Bootloader (occupies 256 bytes)   | Urboot                 |
+| Flash available (no bootloader)   | 16384 bytes            |
+| Flash available (with bootloader) | 16128 bytes            |
+| RAM                               | 1024 bytes             |
+| EEPROM                            | 256 bytes              |
+| GPIO Pins                         | 18 (incl RST)          |
+| ADC Channels                      | 12                     |
+| PWM Channels                      | 4                      |
+| Interfaces                        | 2×UART, USI, I2C slave |
+| Int. Oscillator (MHz)             | 8, 4, 2, 1             |
+| Int. ULP Oscillator               | 128 kHz                |
+| External Crystal (up to 16 MHz)   | All standard           |
+| External Clock (up to 16 MHz)     | All standard           |
+| LED_BUILTIN                       | PIN_PC0                |
 
 ### Urboot bootloader
 This core uses the [Urboot bootloader](https://github.com/stefanrueger/urboot/) for the ATtiny1634, a modern replacement that addresses the fundamental shortcomings of Optiboot on these parts. The bootloader is configured to occupy only 256 bytes, less than half of what Optiboot required, leaving 16128 bytes available for user program. Urboot can be reconfigured to include additional features at the cost of increased flash usage, though the 256-byte variant used here covers the needs of most users. This chip has two hardware serial port, so Urboot can be configured to use either.

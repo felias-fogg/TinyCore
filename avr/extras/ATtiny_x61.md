@@ -1,31 +1,13 @@
 # ATtiny261/461/861/A
 
+The ATtiny261/461/861 is a microcontroller designed with brushless DC (BLDC) motor control in mind. It features an on-chip PLL and a high-speed Timer1 capable of generating three complementary PWM signals with configurable dead time, as required for three-phase BLDC motor drives. It also includes a notably capable ADC, second only to the ATtiny441/841 in the number of differential pairs and programmable gain options.
+
 | Pinout diagram                         | Minimal setup schematic                                     |
 |----------------------------------------|-------------------------------------------------------------|
 |<img src="Pinout_x61.png" width="370">  | <img src="ATtiny261_461_861_minimal_setup.png" width="230"> |
 
-
-| Specification                    | ATtiny861               | ATtiny461               | ATtiny261               |
-|----------------------------------|-------------------------|-------------------------|-------------------------|
-| Bootloader (occupies 256 bytes)  | Urboot                  | Urboot                  | Urboot                  |
-| Uploading uses                   | ISP/SPI pins            | ISP/SPI pins            | ISP/SPI pins            |
-| Flash available user             | 7936 / 8192 bytes       | 3840 / 4096 bytes       | 1792 / 2048 bytes       |
-| RAM                              | 512 bytes               | 256 bytes               | 128 bytes               |
-| EEPROM                           | 512 bytes               | 256 bytes               | 128 bytes               |
-| GPIO Pins                        | 15 + RESET              | 15 + RESET              | 15 + RESET              |
-| ADC Channels                     | 11 (incl RST)           | 11 (incl RST)           | 11 (incl RST)           |
-| Differential ADC                 | Yes, 1x/8x/20x/32x gain | Yes, 1x/8x/20x/32x gain | Yes, 1x/8x/20x/32x gain |
-| PWM Channels                     | 3                       | 3                       | 3                       |
-| Interfaces                       | USI                     | USI                     | USI                     |
-| Int. Oscillator (MHz)            | 16, 8, 4, 2, 1          | 16, 8, 4, 2, 1          | 16, 8, 4, 2, 1          |
-| External Crystal                 | All standard            | All standard            | All standard            |
-| External Clock                   | All standard            | All standard            | All standard            |
-| Int. WDT Oscillator              | 128 kHz                 | 128 kHz                 | 128 kHz                 |
-| LED_BUILTIN                      | PIN_PB6                 | PIN_PB6                 | PIN_PB6                 |
-
-
 ## Table of contents
-- [Overview](#overview)
+- [Specifications](#specifications)
 - [Urboot bootloader](#urboot-bootloader)
 - [Internal oscillator calibration](#internal-oscillator-calibration)
 - [Features](#features)
@@ -46,9 +28,26 @@
   - [ADC differential pair matrix](#adc-differential-pair-matrix)
   - [Temperature measurement](#temperature-measurement)
 
+### Specifications
 
-## Overview
-The ATtiny261/461/861 is a microcontroller designed with brushless DC (BLDC) motor control in mind. It features an on-chip PLL and a high-speed Timer1 capable of generating three complementary PWM signals with configurable dead time, as required for three-phase BLDC motor drives. It also includes a notably capable ADC, second only to the ATtiny441/841 in the number of differential pairs and programmable gain options.
+| Specification                     | ATtiny261/461/861        |
+|-----------------------------------|--------------------------|
+| Bootloader (occupies 256 bytes)   | Urboot                   |
+| Uploading uses                    | ISP/SPI pins             |
+| Flash available (no bootloader)   | 2048/4096/8192 bytes     |
+| Flash available (with bootloader) | 1792/3840/7936 bytes     |
+| RAM                               | 128/256/512 bytes        |
+| EEPROM                            | 128/256/512 bytes        |
+| GPIO Pins                         | 15 + RESET               |
+| ADC Channels                      | 11 (incl RST)            |
+| Differential ADC                  | Yes, 1x/8x/20x/32x gain  |
+| PWM Channels                      | 3                        |
+| Interfaces                        | USI                      |
+| Int. Oscillator (MHz)             | 16, 8, 4, 2, 1           |
+| External Crystal                  | All standard             |
+| External Clock                    | All standard             |
+| Int. WDT Oscillator               | 128 kHz                  |
+| LED_BUILTIN                       | PIN_PB6                  |
 
 ### Urboot bootloader
 This core uses the [Urboot bootloader](https://github.com/stefanrueger/urboot/) for the ATtiny261/461/861, a modern replacement that addresses the fundamental shortcomings of Optiboot on these parts. The bootloader is configured to occupy only 256 bytes, less than half of what Optiboot required, leaving 1792, 3840, or 7936 bytes available for user code on the ATtiny261, 461, and 861 respectively. Urboot can be reconfigured to include additional features at the cost of increased flash usage, though the 256-byte variant used here covers the needs of most users. These chips does not have a hardware serial port, so Urboot is configured to use software-based UART.

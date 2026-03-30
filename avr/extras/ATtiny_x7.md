@@ -1,30 +1,13 @@
 # ATtiny87/167
 
+The ATtiny87/167 is distinguished within the classic tinyAVR lineup by its full hardware UART with LIN (Local Interconnect Network) support, making it a fit for automotive and industrial applications. It also features a hardware SPI peripheral and a USI for I2C, along with a flexible Timer1 capable of driving up to eight PWM pins simultaneously though only two independent duty cycles are available across the PORTB pins. The ATtiny87 offers 8 KiB of flash and the ATtiny167 16 KiB; both share the same 512 bytes of RAM and EEPROM.
+
 | Pinout diagram                        | Minimal setup schematic                                |
 |---------------------------------------|--------------------------------------------------------|
 |<img src="Pinout_x7.png" width="360">  | <img src="ATtiny87_167_minimal_setup.png" width="240"> |
 
-
-| Specification                    | ATtiny167          | ATtiny87           |
-|----------------------------------|--------------------|--------------------|
-| Bootloader (occupies 256 bytes)  | Urboot             | Urboot             |
-| Flash available user             | 16128 / 16384 bytes| 7936 / 8192 bytes  |
-| RAM                              | 512 bytes          | 512 bytes          |
-| EEPROM                           | 512 bytes          | 512 bytes          |
-| GPIO Pins                        | 15                 | 15                 |
-| ADC Channels                     | 11                 | 11                 |
-| PWM Channels                     | 1 fixed, 2 flex    | 1 fixed, 2 flex    |
-| Differential ADC                 | 8x/20x gain        | 8x/20x gain        |
-| Interfaces                       | LIN/UART, USI, SPI | LIN/UART, USI, SPI |
-| Int. Oscillator (MHz)            | 8, 4, 2, 1         | 8, 4, 2, 1         |
-| External Crystal                 | All standard       | All standard       |
-| External Clock                   | All standard       | All standard       |
-| Int. WDT Oscillator              | 128 kHz            | 128 kHz            |
-| LED_BUILTIN                      | PIN_PA6            | PIN_PA6            |
-
-
 ## Table of contents
-- [Overview](#overview)
+- [Specifications](#specifications)
 - [Urboot bootloader](#urboot-bootloader)
 - [Internal oscillator calibration](#internal-oscillator-calibration)
 - [Features](#features)
@@ -36,14 +19,30 @@
   - [Tone support](#tone-support)
   - [Servo support](#servo-support)
 - [ADC features](#adc-features)
-  - [ADC Reference options](#adc-reference-options)
+  - [ADC reference options](#adc-reference-options)
   - [Internal sources](#internal-sources)
   - [Differential ADC](#differential-adc)
   - [Temperature measurement](#temperature-measurement)
 
+### Specifications
 
-### Overview
-The ATtiny87/167 is distinguished within the classic tinyAVR lineup by its full hardware UART with LIN (Local Interconnect Network) support, making it a fit for automotive and industrial applications. It also features a hardware SPI peripheral and a USI for I2C, along with a flexible Timer1 capable of driving up to eight PWM pins simultaneously — though only two independent duty cycles are available across the PORTB pins. The ATtiny87 offers 8 KiB of flash and the ATtiny167 16 KiB; both share the same 512 bytes of RAM and EEPROM.
+| Specification                     | ATtiny87/167          |
+|-----------------------------------|-----------------------|
+| Bootloader (occupies 256 bytes)   | Urboot                |
+| Flash available (no bootloader)   | 8192/16384 bytes      |
+| Flash available (with bootloader) | 7936/16128 bytes      |
+| RAM                               | 512 bytes             |
+| EEPROM                            | 512 bytes             |
+| GPIO Pins                         | 15                    |
+| ADC Channels                      | 11                    |
+| Differential ADC                  | 8x/20x gain           |
+| PWM Channels                      | 1 fixed, 2 flex       |
+| Interfaces                        | LIN/UART, USI, SPI    |
+| Int. Oscillator (MHz)             | 8, 4, 2, 1            |
+| External Crystal                  | All standard          |
+| External Clock                    | All standard          |
+| Int. WDT Oscillator               | 128 kHz               |
+| LED_BUILTIN                       | PIN_PA6               |
 
 ### Urboot bootloader
 This core uses the [Urboot bootloader](https://github.com/stefanrueger/urboot/) for the ATtiny87/167, a modern replacement that addresses the fundamental shortcomings of Optiboot on these parts. The bootloader is configured to occupy only 256 bytes, less than half of what Optiboot required, leaving 7936 or 16128 bytes available for user program. Urboot can be reconfigured to include additional features at the cost of increased flash usage, though the 256-byte variant used here covers the needs of most users. These chips have a hardware serial port, UART0, so Urboot is configured to use this.

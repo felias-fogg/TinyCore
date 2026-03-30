@@ -1,29 +1,13 @@
 # ATtiny828/R
 
+The ATtiny828 is an unusual tinyAVR device offering 28 GPIO pins (incl. RST), a hardware UART, hardware SPI, and a hardware I2C slave; a peripheral combination not found on any other classic ATtiny. It is available in a 32-pin TQFP or QFN package only. A notable silicon errata affects PD3, which cannot function as a digital input unless the ULP oscillator is running; this also impacts the hardware SPI and I2C slave peripherals that share that pin. Despite its rich peripheral set, the ATtiny828 lacks support for an external crystal, but can be clocked by an external clock. The ATtiny1634R has a more accurate internal oscillator.
+
 | Pinout diagram                        | Minimal setup schematic                             |
 |---------------------------------------|-----------------------------------------------------|
 |<img src="Pinout_828.png" width="180"> | <img src="ATtiny828_minimal_setup.png" width="300"> |
 
-
-| Specification                    | ATtiny828            |
-|----------------------------------|----------------------|
-| Bootloader (occupies 256 bytes)  | Urboot               |
-| Flash available user             | 7936 / 8192 bytes    |
-| RAM                              | 512 bytes            |
-| EEPROM                           | 256 bytes            |
-| GPIO Pins                        | 28 (incl RST)        |
-| ADC Channels                     | 28                   |
-| PWM Channels                     | 4                    |
-| Interfaces                       | UART, SPI, I2C slave |
-| Int. Oscillator (MHz)            | 8, 4, 2, 1           |
-| External Crystal                 | Not supported        |
-| External Clock                   | All standard         |
-| Int. WDT Oscillator              | Not supported        |
-| LED_BUILTIN                      | PIN_PB0              |
-
-
 ## Table of contents
-- [Overview](#overview)
+- [Specifications](#specifications)
 - [Urboot bootloader](#urboot-bootloader)
 - [Warning: PD3 Non-functional as input without watchdog timer](#warning-pd3-non-functional-as-input-without-watchdog-timer)
 - [Internal oscillator calibration](#internal-oscillator-calibration)
@@ -41,9 +25,24 @@
   - [Special "high sink" port](#special-high-sink-port)
   - [Separate pullup-enable register](#separate-pullup-enable-register)
 
+### Specifications
 
-### Overview
-The ATtiny828 is an unusual tinyAVR device offering 28 GPIO pins (incl. RST), a hardware UART, hardware SPI, and a hardware I2C slave — a peripheral combination not found on any other classic ATtiny. It is available in a 32-pin TQFP or QFN package only. A notable silicon errata affects PD3, which cannot function as a digital input unless the ULP oscillator is running; this also impacts the hardware SPI and I2C slave peripherals that share that pin. Despite its rich peripheral set, the ATtiny828 lacks support for an external crystal, but can be clocked by an external clock.
+| Specification                     | ATtiny828            |
+|-----------------------------------|----------------------|
+| Bootloader (occupies 256 bytes)   | Urboot               |
+| Flash available (no bootloader)   | 8192 bytes           |
+| Flash available (with bootloader) | 7936 bytes           |
+| RAM                               | 512 bytes            |
+| EEPROM                            | 256 bytes            |
+| GPIO Pins                         | 28 (incl RST)        |
+| ADC Channels                      | 28 (incl RST)        |
+| PWM Channels                      | 4                    |
+| Interfaces                        | UART, SPI, I2C slave |
+| Int. Oscillator (MHz)             | 8, 4, 2, 1           |
+| External Crystal                  | Not supported        |
+| External Clock                    | All standard         |
+| Int. WDT Oscillator               | Not supported        |
+| LED_BUILTIN                       | PIN_PB0              |
 
 ### Urboot bootloader
 This core uses the [Urboot bootloader](https://github.com/stefanrueger/urboot/) for the ATtiny828, a modern replacement that addresses the fundamental shortcomings of Optiboot on these parts. The bootloader is configured to occupy only 256 bytes, less than half of what Optiboot required, leaving 7936 bytes available for user program. Urboot can be reconfigured to include additional features at the cost of increased flash usage, though the 256-byte variant used here covers the needs of most users. This chip has a hardware serial port, UART0, so Urboot is configured to use this.

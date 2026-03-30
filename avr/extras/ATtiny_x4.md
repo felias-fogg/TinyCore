@@ -1,30 +1,13 @@
 # ATtiny24/44/84
 
+The ATtiny24/44/84 family is one of the most widely used classic tinyAVR series. Available in a 14-pin DIP, SOIC-14 and QFN-20 packages. These parts offer a USI peripheral for I2C and SPI, a differential ADC with selectable 1x and 20x gain, and four PWM channels. The three family members differ only in flash and RAM size: 2/4/8 KB of flash and 128/256/512 bytes of RAM respectively. They do not feature a hardware UART; serial communication relies on the built-in software serial implementation.
+
 | Pinout diagram                        | Minimal setup schematic                                  |
 |---------------------------------------|----------------------------------------------------------|
 |<img src="Pinout_x4.png" width="340">  | <img src="ATtiny24_44_84_minimal_setup.png" width="260"> |
 
-
-| Specification                    | ATtiny84         | ATtiny44         | ATtiny24         |
-|----------------------------------|------------------|------------------|------------------|
-| Bootloader (occupies 256 bytes)  | Urboot           | Urboot           | Urboot           |
-| Flash available user             | 7936 / 8192 bytes| 3840 / 4096 bytes| 1792 / 2048 bytes|
-| RAM                              | 512 bytes        | 256 bytes        | 128 bytes        |
-| EEPROM                           | 512 bytes        | 256 bytes        | 128 bytes        |
-| GPIO Pins                        | 11 + RESET       | 11 + RESET       | 11 + RESET       |
-| ADC Channels                     | 12 (incl RST)    | 12 (incl RST)    | 12 (incl RST)    |
-| Differential ADC                 | 1/20x gain       | 1/20x gain       | 1/20x gain       |
-| PWM Channels                     | 4: PA5-7, PB2    | 4: PA5-7, PB2    | 4: PA5-7, PB2    |
-| Interfaces                       | USI              | USI              | USI              |
-| Bootloader pins (RX/TX)          | PA2/PA1          | PA2/PA1          | PA2/PA1          |
-| Int. Oscillator (MHz)            | 8, 4, 2, 1       | 8, 4, 2, 1       | 8, 4, 2, 1       |
-| External Crystal                 | All standard     | All standard     | All standard     |
-| External Clock                   | All standard     | All standard     | All standard     |
-| Int. WDT Oscillator              | 128 kHz          | 128 kHz          | 128 kHz          |
-| LED_BUILTIN                      | PIN_PB2          | PIN_PB2          | PIN_PB2          |
-
 ## Table of contents
-- [Overview](#overview)
+- [Specifications](#specifications)
 - [Urboot bootloader](#urboot-bootloader)
 - [Internal oscillator calibration](#internal-oscillator-calibration)
 - [Features](#features)
@@ -42,9 +25,25 @@
   - [ADC differential pair matrix](#adc-differential-pair-matrix)
   - [Temperature measurement](#temperature-measurement)
 
+# Specifications
 
-### Overview
-The ATtiny24/44/84 family is one of the most widely used classic tinyAVR series. Available in a 14-pin DIP, SOIC-14 and QFN-20 packages. These parts offer a USI peripheral for I2C and SPI, a differential ADC with selectable 1x and 20x gain, and four PWM channels. The three family members differ only in flash and RAM size: 2/4/8 KB of flash and 128/256/512 bytes of RAM respectively. They do not feature a hardware UART; serial communication relies on the built-in software serial implementation.
+| Specification                     | ATtiny24/44/84        |
+|-----------------------------------|-----------------------|
+| Bootloader (occupies 256 bytes)   | Urboot                |
+| Flash available (no bootloader)   | 2048/4096/8192 bytes  |
+| Flash available (with bootloader) | 1792/3840/7936 bytes  |
+| RAM                               | 128/256/512 bytes     |
+| EEPROM                            | 128/256/512 bytes     |
+| GPIO Pins                         | 11 + RESET            |
+| ADC Channels                      | 12 (incl RST)         |
+| Differential ADC                  | 1x/20x gain           |
+| PWM Channels                      | 4                     |
+| Interfaces                        | USI                   |
+| Int. Oscillator (MHz)             | 8, 4, 2, 1            |
+| External Crystal                  | All standard          |
+| External Clock                    | All standard          |
+| Int. WDT Oscillator               | 128 kHz               |
+| LED_BUILTIN                       | PIN_PB2               |
 
 ### Urboot bootloader
 This core uses the [Urboot bootloader](https://github.com/stefanrueger/urboot/) for the ATtiny24/44/84, a modern replacement that addresses the fundamental shortcomings of Optiboot on these parts. The bootloader is configured to occupy only 256 bytes, less than half of what Optiboot required, leaving 1792, 3840, or 7936 bytes available for user code on the ATtiny24, 44, and 84 respectively. Urboot can be reconfigured to include additional features at the cost of increased flash usage, though the 256-byte variant used here covers the needs of most users. These chips does not have a hardware serial port, so Urboot is configured to use software-based UART.
