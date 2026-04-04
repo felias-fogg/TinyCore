@@ -17,10 +17,10 @@ The tests in this folder each check one particular basic functionality. They are
 | Tests                                       | ATtinyX5 | ATtinyX4 | ATtinyX41 | ATtinyX61 | ATtinyX7 | ATtinyX8 | ATtinyX313 | ATtiny1634 | ATtiny828 | ATtiny43 | ATtiny26 |
 | ------------------------------------------- | -------- | -------- | --------- | --------- | -------- | -------- | ---------- | ---------- | --------- | -------- | -------- |
 | `digitalRead()`/`digitalWrite()`on all pins | 🟢        | 🟢        | 🟢         | 🟢         | 🟢        | 🟢        | 🟢          | 🟢          | 🟢         | 🟢        | 🟢        |
-| `analogWrite()`on all supported pins        | 🟢        | 🟢        | 🟢         | 🟢         | 🟢        | 🟢        | 🟢          | 🟢          | ⚪️         | 🟢        | ⚪️        |
+| `analogWrite()`on all supported pins        | 🟢        | 🟢        | 🟢         | 🟢         | 🟢        | 🟢        | 🟢          | 🟢          | 🟢         | 🟢        | 🔴        |
 | `Serial.print()` and `Serial.read()`        | 🟢        | 🟢        | 🟢         | 🟢         | 🟢        | 🟢        | 🟢          | 🟢          | 🟢         | 🟢        | 🟢        |
 | `analogRead()`on all supported pins         | 🟢        | 🟢        | 🟢         | 🟢         | 🟢        | 🟢        | ⚫️          | 🟢          | 🟢         | 🟢        | 🟢        |
-| SPI master                                  | 🟢        | 🟢        | 🟢         | 🟢         | 🔴        | 🟢        | 🟢          | 🟢          | 🟢         | 🟢        | 🟢        |
+| SPI master                                  | 🟢        | 🟢        | 🟢         | 🟢         | 🟢        | 🟢        | 🟢          | 🟢          | 🟢         | 🟢        | 🟢        |
 | SPI slave                                   | ⚫️        | ⚫️        | ⚪️         | ⚫️         | 🟢        | 🟢        | ⚫️          | ⚫️          | 🟢         | ⚫️        | ⚫️        |
 | Wire master                                 | 🟢        | 🟢        | 🟢         | 🟢         | 🟢        | 🟢        | 🟢          | 🟢          | 🔴         | 🟢        | 🔴        |
 | Wire slave                                  | 🟢        | ⚪️        | ⚪️         | 🟢         | 🔴        | 🟢        | ⚪️          | ⚪️          | 🔴         | 🔴        | 🔴        |
@@ -36,15 +36,15 @@ The tests in this folder each check one particular basic functionality. They are
 
 ATtiny26:
 
-- analogWrite: PWM does not work on either PWM pin (9 and 11)
+- analogWrite: PWM does not work on either PWM pin (9 and 11): Still the same problem (Apr 04, 2025).
 - Wire Master & Slave, Neopixel: Not enough memory for test sketch
-- Servo: Compilation error
+- Servo: Compilation error (Timer1 is a 8-bit timer/counter, not a 16-bit one)
 
 ATtiny167:
 
-- TWI slave: Stops after a few interactions and is stuck in waiting for the serial output buffer to become empty (same behavior as in the 1.5.2 core)
+- TWI slave: Stops after a few interactions and is stuck in waiting for the serial output buffer to become empty (same behavior as in the 1.5.2 core). Still the same problem (Apr 04, 2025).
 
-- SPI master: Stops in the middle of the test. (may be related to a bug previously fixed. Needs re-testing)
+- SPI master: works now
 
 ATtiny43U:
 
@@ -54,6 +54,4 @@ ATtiny43U:
 ATtiny828:
 
 - **Note**: When PD3 (D27) is used as an input (also for TWI/SPI slave clock), WDT has to be activated!
-
 - Wire Master & Slave fail with a compilation error (pins need to be defined in pins_arduino.h)
-- analogWrite: Does not work at all. This still holds for the new hardware setup. Under the 1.5.2 core it works for pins 20-22 (but not for 16). 
