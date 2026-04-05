@@ -41,8 +41,14 @@ set /a flashpercent=flash*100/maxflash
 
 REM Determine severity
 set severity=info
-if %ram% GTR %maxram% set severity=error
-if %flash% GTR %maxflash% set severity=error
+if %ram% GTR %maxram% (
+   set severity=error
+   set errstr="error": "Not enough RAM",
+   )
+if %flash% GTR %maxflash% (
+   set severity=error
+   set errstr="error": "Sketch is too big",
+   )
 
 REM Output JSON
-echo {"output": "Flash memory used: %flash% bytes out of %maxflash% (%flashpercent%%%). RAM used for global variables: %ram% bytes out of %maxram%.","severity": "%severity%","sections": [{"name": "text","size": %flash%,"max_size": %maxflash%},{"name": "data","size": %ram%,"max_size": %maxram%}]}
+echo {"output": "Flash memory used: %flash% bytes out of %maxflash% (%flashpercent%%%). RAM used for global variables: %ram% bytes out of %maxram%.","severity": "%severity%",%errstr%"sections": [{"name": "text","size": %flash%,"max_size": %maxflash%},{"name": "data","size": %ram%,"max_size": %maxram%}]}
