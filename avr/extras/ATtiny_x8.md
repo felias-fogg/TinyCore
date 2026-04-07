@@ -1,10 +1,10 @@
 # ATtiny48/88
 
-The ATtiny48/88 is designed as a low-cost alternative compatible with the popular ATmega48/888 series, sharing a nearly identical pinout with a few additional GPIO pins available in the TQFP package. While the ATtiny48/88 includes full hardware I2C and SPI peripherals, it lacks both a hardware UART and support for an external crystal oscillator.
+The ATtiny48/88 is designed as a low-cost alternative compatible with the popular ATmega48/88 series, sharing a nearly identical pinout with a few additional GPIO pins available in the TQFP package. While the ATtiny48/88 includes full hardware I2C and SPI peripherals, it lacks both a hardware UART and support for an external crystal oscillator. TinyCore provides support for the "MH-ET Live MHTiny" board, which has an ATtiny88 along with an external 16 MHz clock. Note that the on-board USB connector on this board is not supported by TinyCore.
 
-| Pinout diagram DIP-28                   | Pinout diagram TQFP-32                                | Minimal setup schematic                               |
-|-----------------------------------------|-------------------------------------------------------|-------------------------------------------------------|
-|<img src="Pinout_x8_PU.png" width="250"> |<center><img src="Pinout_x8.png" width="120"></center> | <img src="ATtiny48_88_minimal_setup.png" width="220"> |
+| Pinout diagram DIP-28                   | Pinout diagram TQFP-32                                | Pinout diagram MH-Tiny                                   | Minimal setup schematic                               |
+|-----------------------------------------|-------------------------------------------------------|----------------------------------------------------------|-------------------------------------------------------|
+|<img src="Pinout_x8_PU.png" width="250"> |<center><img src="Pinout_x8.png" width="120"></center> |<center><img src="Pinout_x8_MH.png" width="220"></center> | <img src="ATtiny48_88_minimal_setup.png" width="220"> |
 
 ## Table of contents
 - [Specifications](#specifications)
@@ -25,22 +25,22 @@ The ATtiny48/88 is designed as a low-cost alternative compatible with the popula
 
 ### Specifications
 
-| Specification                     | ATtiny48/88           |
-|-----------------------------------|-----------------------|
-| Bootloader (occupies 256 bytes)   | Urboot                |
-| Flash available (no bootloader)   | 4096/8192 bytes       |
-| Flash available (with bootloader) | 3840/7936 bytes       |
-| RAM                               | 256/512 bytes         |
-| EEPROM                            | 64 bytes              |
-| GPIO Pins                         | 26 + RESET            |
-| ADC Channels                      | 8 (6 in DIP pack.)    |
-| PWM Channels                      | 2                     |
-| Interfaces                        | SPI, I2C              |
-| Int. Oscillator (MHz)             | 8, 4, 2, 1            |
-| External Crystal                  | Not supported         |
-| External Clock                    | All standard          |
-| Int. WDT Oscillator               | 128 kHz               |
-| LED_BUILTIN                       | PIN_PB5               |
+| Specification                     | ATtiny48/88           | MH-Tiny               |
+|-----------------------------------|-----------------------|-----------------------|
+| Bootloader (occupies 256 bytes)   | Urboot                | Urboot                |
+| Flash available (no bootloader)   | 4096/8192 bytes       | 8192 bytes            |
+| Flash available (with bootloader) | 3840/7936 bytes       | 7936 bytes            |
+| RAM                               | 256/512 bytes         | 512 bytes             |
+| EEPROM                            | 64 bytes              | 64 bytes              |
+| GPIO Pins                         | 27 + RESET            | 26 + RESET            |
+| ADC Channels                      | 8 (6 in DIP pack.)    | 8                     |
+| PWM Channels                      | 2                     | 2                     |
+| Interfaces                        | SPI, I2C              | SPI, I2C              |
+| Int. Oscillator (MHz)             | 8, 4, 2, 1            | 8, 4, 2, 1            |
+| External Crystal                  | Not supported         | Not supported         |
+| External Clock                    | All standard          | 16 MHz                |
+| Int. WDT Oscillator               | 128 kHz               | 128 kHz               |
+| LED_BUILTIN                       | PIN_PB5               | PIN_PD0               |
 
 ### Urboot bootloader
 This core uses the [Urboot bootloader](https://github.com/stefanrueger/urboot/) for the ATtiny48/88, a modern replacement that addresses the fundamental shortcomings of Optiboot on these parts. The bootloader is configured to occupy only 256 bytes, less than half of what Optiboot required, leaving 3840 or 7936 bytes available for user code on the ATtiny48 and 88 respectively. Urboot can be reconfigured to include additional features at the cost of increased flash usage, though the 256-byte variant used here covers the needs of most users. These chips does not have a hardware serial port, so Urboot is configured to use software-based UART.

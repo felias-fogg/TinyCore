@@ -18,6 +18,7 @@ menu.baudrate=Baud rate
 menu.wiremode=Wire mode
 menu.resetpin=Reset pin
 menu.softserial=Software serial
+menu.pinout=Pinout
 
 
 ########################
@@ -711,7 +712,6 @@ x8.bootloader.lock_bits=0xff
 x8.bootloader.high_fuses=0b1101{bootloader.eesave_bit}{bootloader.bod_bits}
 x8.bootloader.pins=swio_rxd7_txd6
 x8.build.core=tiny
-x8.build.variant=tinyx8
 x8.build.board=AVR_ATTINYX8
 x8.build.extra_flags={build.softser}
 
@@ -774,6 +774,12 @@ x8.menu.bootloader.urboot_+500.upload.protocol=urclock
 x8.menu.bootloader.urboot_+500.build.export_merged_output=true
 x8.menu.bootloader.urboot_+500.bootloader.str=-Uurboot:1s_pr_noled_{bootloader.pins}_{bootloader.baudrate}baud_m{bootloader.clock}
 x8.menu.bootloader.urboot_+500.bootloader.extended_fuses=0xfe
+
+# Pinout
+x8.menu.pinout.standard=Standard
+x8.menu.pinout.standard.build.variant=tinyx8
+x8.menu.pinout.mhtiny=MH-Tiny
+x8.menu.pinout.mhtiny.build.variant=tinyx8_mh
 
 # EEPROM
 x8.menu.eeprom.keep=EEPROM retained
