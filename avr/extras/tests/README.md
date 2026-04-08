@@ -21,7 +21,7 @@ The tests in this folder each check one particular basic functionality. They are
 | `Serial.print()` and `Serial.read()`        | 🟢        | 🟢        | 🟢         | 🟢         | 🟢        | 🟢        | 🟢          | 🟢          | 🟢         | 🟢        | 🟢        |
 | `analogRead()`on all supported pins         | 🟢        | 🟢        | 🟢         | 🟢         | 🟢        | 🟢        | ⚫️          | 🟢          | 🟢         | 🟢        | 🟢        |
 | SPI master                                  | 🟢        | 🟢        | 🟢         | 🟢         | 🟢        | 🟢        | 🟢          | 🟢          | 🟢         | 🟢        | 🟢        |
-| SPI slave                                   | ⚫️        | ⚫️        | ⚪️         | ⚫️         | 🟢        | 🟢        | ⚫️          | ⚫️          | 🟢         | ⚫️        | ⚫️        |
+| SPI slave                                   | ⚫️        | ⚫️        | 🟢         | ⚫️         | 🟢        | 🟢        | ⚫️          | ⚫️          | 🟢         | ⚫️        | ⚫️        |
 | Wire master                                 | 🟢        | 🟢        | 🟢         | 🟢         | 🟢        | 🟢        | 🟢          | 🟢          | 🔴         | 🟢        | 🔴        |
 | Wire slave                                  | 🟢        | 🟢        | 🔴         | 🟢         | 🔴        | 🟢        | 🔴          | 🟢          | 🔴         | 🔴        | 🔴        |
 | Neopixel library/libraries                  | 🟢        | 🟢        | ⚪️         | 🟢         | 🟢        | 🟢        | ⚪️          | ⚪️          | 🟢         | 🟢        | 🔴        |
