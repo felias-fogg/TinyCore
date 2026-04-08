@@ -732,8 +732,12 @@
       return value;
     }
   #else // Implementations for slave only mode
-void TwoWire::begin(uint8_t address) {
+    void TwoWire::begin(uint8_t address) {
       TinyWireS.begin((uint8_t)address, 0);
+      slaveMode = true;
+    }
+    void TwoWire::begin(int address) {
+      begin((uint8_t)address);
     }
     // must be called in slave onRequest event callback
     size_t TwoWire::write(uint8_t data) {
