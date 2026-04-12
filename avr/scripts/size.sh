@@ -21,7 +21,7 @@ maxram=$4
 flash=`$1 -A $2 | egrep  '^(.text|.data)\s+([0-9]+).*' | awk '{s+=$2}END{print s}'`
 ram=`$1 -A $2 | egrep  '^(.data|.bss|.noinit)\s+([0-9]+).*' | awk '{s+=$2}END{print s}'`
 flashpercent=$((flash*100/maxflash))
-printf  '{  "output": "Flash memory used: %d bytes out of %d (%d%%).\n ' $flash $maxflash $flashpercent
+printf  '{  "output": "Flash memory used: %d bytes out of %d (%d%%). ' $flash $maxflash $flashpercent
 printf  'RAM used for global variables: %d bytes out of %d.",' $ram $maxram 
 if [[ $ram -gt $maxram ]]; then
     printf '"severity": "error", "error": "Not enough RAM", '
