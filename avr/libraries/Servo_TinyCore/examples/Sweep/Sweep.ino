@@ -11,7 +11,7 @@
  include  Servo_ATTinyCore.h instead - this will always use the version that came with core.
 */
 
-#include <Servo_ATTinyCore.h>
+#include <Servo_TinyCore.h>
 
 Servo myservo;  // create servo object to control a servo
 // twelve servo objects can be created on most boards

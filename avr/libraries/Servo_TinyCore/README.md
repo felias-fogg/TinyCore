@@ -3,7 +3,7 @@
 This library allows an Arduino board to control RC (hobby) servo motors.
 
 This library has been modified to add support for additional ATtiny processors. This version of the library
-has `_ATTinyCore` appended to the name. This permits its use even when the normal servo library, which does
+has `_TinyCore` appended to the name. This permits its use even when the normal servo library, which does
 not support all of these parts, has been installed.
 
 It presents the same API.
