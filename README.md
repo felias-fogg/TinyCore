@@ -435,9 +435,9 @@ See the tinyNeoPixel documentation and the included examples for additional deta
 
 ### ATtiny48/88
 
-| Pinout diagram DIP-28                              | Pinout diagram TQFP-32                                           | Minimal setup schematic                                          |
-|----------------------------------------------------|------------------------------------------------------------------|------------------------------------------------------------------|
-|<img src="avr/extras/Pinout_x8_PU.png" width="250"> |<center><img src="avr/extras/Pinout_x8.png" width="120"></center> | <img src="avr/extras/ATtiny48_88_minimal_setup.png" width="220"> |
+| Pinout diagram DIP-28                              | Pinout diagram TQFP-32                                           | MH-Tiny                                            | Minimal setup schematic                                          |
+|----------------------------------------------------|------------------------------------------------------------------|----------------------------------------------------|------------------------------------------------------------------|
+|<img src="avr/extras/Pinout_x8_PU.png" width="150"> |<center><img src="avr/extras/Pinout_x8.png" width="120"></center> | <img src="avr/extras/Pinout_x8_MH.png" width="150">| <img src="avr/extras/ATtiny48_88_minimal_setup.png" width="150"> |
 
 
 ### ATtiny2313/4313
