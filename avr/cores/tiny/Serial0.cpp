@@ -24,14 +24,12 @@
           unsigned char c  =  LINDAT;
           Serial._store_rx_char(c);
       }
-      if(LINSIR & _BV(LTXOK)) {
       #ifdef TXBUFFER
+      if(LINSIR & _BV(LTXOK)) {
         //PINA |= _BV(PINA5); //debug
         Serial._tx_reg_empty_irq();
-      #else
-        // nothing to do because we check in the write routine for empty output buffer
-      #endif
       }
+      #endif
     }
   #endif
   #if defined(UBRR0H)

@@ -232,11 +232,11 @@
         // register empty flag ourselves. If it is set, pretend an
         // interrupt has happened and call the handler to free up
         // space for us.
-    #ifdef LINSIR
+   #ifdef LINSIR
         if (bit_is_set(LINSIR, LTXOK))
-    #else
+   #else
         if(bit_is_set(*_ucsra, UDRE))
-    #endif
+   #endif
           _tx_reg_empty_irq();
       }
     }
@@ -244,29 +244,29 @@
     _tx_buffer[_tx_buffer_head] = c;
     _tx_buffer_head = i;
 
-    #if (defined(UBRR0H) || defined(UBRR1H) )
-      *_ucsrb |= _udrie;
-    #else
-      if(!(LINENIR & _BV(LENTXOK))){
-        // The buffer was previously empty, so load the first byte, then enable 
-        // the TX Complete interrupt
-        unsigned char c = _tx_buffer[_tx_buffer_tail];
-        _tx_buffer_tail = (_tx_buffer_tail + 1) & (SERIAL_BUFFER_SIZE - 1);
-        LINDAT = c;
-        LINENIR = _BV(LENTXOK) | _BV(LENRXOK);
-      }
-    #endif
+   #if (defined(UBRR0H) || defined(UBRR1H) )
+    *_ucsrb |= _udrie;
+   #else
+    if(!(LINENIR & _BV(LENTXOK))){
+      // The buffer was previously empty, so load the first byte, then enable 
+      // the TX Complete interrupt
+      unsigned char c = _tx_buffer[_tx_buffer_tail];
+      _tx_buffer_tail = (_tx_buffer_tail + 1) & (SERIAL_BUFFER_SIZE - 1);
+      LINDAT = c;
+      LINENIR = _BV(LENTXOK) | _BV(LENRXOK);
+    }
+   #endif
   #else // without ring buffer
-    #ifdef LINSIR
-      if (bit_is_clear(LINENIR, LENTXOK)) // nothing written yet
-         LINENIR = _BV(LENTXOK) | _BV(LENRXOK);
-      else
-        while (bit_is_clear(LINSIR, LTXOK)); // wait for output register to empty
+   #ifdef LINSIR
+    if (bit_is_clear(LINENIR, LENTXOK)) // nothing written yet
+      LINENIR = _BV(LENTXOK) | _BV(LENRXOK);
+    else
+      while (bit_is_clear(LINSIR, LTXOK)); // wait for output register to empty
     LINDAT = c;
-    #else
+   #else
     while (bit_is_clear(*_ucsra, UDRE));
     *_udr = c;
-    #endif
+   #endif
   #endif
     
     return 1;
