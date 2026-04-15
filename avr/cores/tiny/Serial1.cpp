@@ -4,13 +4,13 @@
   #if defined(UBRR1H)
     HardwareSerial Serial1(&UBRR1H, &UBRR1L, &UCSR1A, &UCSR1B, &UDR1);
   #endif
-  #if defined(USART1_RX_vect)
+#if defined(USART1_RX_vect) && !defined(TX_ONLY)
     ISR(USART1_RX_vect)
     {
       unsigned char c = UDR1;
       Serial1._store_rx_char(c);
     }
-  #elif defined(USART1_RXC_vect)
+  #elif defined(USART1_RXC_vect) && !defined(TX_ONLY)
     ISR(USART1_RXC_vect )
     {
       unsigned char c = UDR1;
@@ -19,7 +19,7 @@
   #else
     //no UART1
   #endif
-  #ifdef USART1_UDRE_vect
+  #if defined(USART1_UDRE_vect) && defined(TXBUFFER)
     ISR(USART1_UDRE_vect)
     {
       Serial1._tx_reg_empty_irq();

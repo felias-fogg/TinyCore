@@ -57,6 +57,7 @@
 
 // Interrupt handler helpers //////////////////////////////////////////////////////////////
 
+#ifdef TXBUFFER
   void HardwareSerial::_tx_reg_empty_irq(void)
   {
     if (_tx_buffer_head == _tx_buffer_tail) {
@@ -77,7 +78,9 @@
 #endif
     }
   }
+#endif
 
+#ifndef TX_ONLY
   void HardwareSerial::_store_rx_char(unsigned char c) {
     byte i = (_rx_buffer_head + 1) % SERIAL_BUFFER_SIZE;
 
@@ -90,6 +93,7 @@
       _rx_buffer_head = i;
     }
   }
+#endif
 
 // Public Methods //////////////////////////////////////////////////////////////
 
@@ -124,14 +128,21 @@
     // assign the baud_setting, a.k.a. ubbr (USART Baud Rate Register)
     *_ubrrh = baud_setting >> 8;
     *_ubrrl = baud_setting;
+   #ifndef TX_ONLY
     *_ucsrb = (_rxen | _txen | _rxcie);
-
+   #else
+    *_ucsrb = (_txen); // do not enable RX pin and interrupt of TX only
+   #endif
   #else
     LINCR = (1 << LSWRES);
     LINBRR = (((F_CPU * 10L / 16L / baud) + 5L) / 10L) - 1;
     LINBTR = (1 << LDISR) | (16 << LBT0);
+    #ifndef TX_ONLY
     LINCR = _BV(LENA) | _BV(LCMD2) | _BV(LCMD1) | _BV(LCMD0);
     LINENIR =_BV(LENRXOK);
+    #else
+    LINCR = _BV(LENA) | _BV(LCMD2) | _BV(LCMD0); // Do not enable receive byte in TX-only mode
+    #endif
   #endif
     // LINENIR only ever set to 0, 1, 2, or 3. Can we use our knowledge of the state if should be in to out advantage?
 
@@ -166,18 +177,27 @@
   }
 
   int HardwareSerial::available(void) {
+    #ifndef TX_ONLY
     return (unsigned int)(SERIAL_BUFFER_SIZE + _rx_buffer_head - _rx_buffer_tail) & (SERIAL_BUFFER_SIZE - 1);
+    #else
+    return 0;
+    #endif
   }
 
   int HardwareSerial::peek(void) {
+    #ifndef TX_ONLY
     if (_rx_buffer_head == _rx_buffer_tail) {
       return -1;
     } else {
       return _rx_buffer[_rx_buffer_tail];
     }
+    #else
+    return -1;
+    #endif
   }
 
   int HardwareSerial::read(void) {
+    #ifndef TX_ONLY
     // if the head isn't ahead of the tail, we don't have any characters
     if (_rx_buffer_head == _rx_buffer_tail) {
       return -1;
@@ -186,31 +206,44 @@
       _rx_buffer_tail = (_rx_buffer_tail + 1)  & (SERIAL_BUFFER_SIZE - 1);
       return c;
     }
+    #else
+    return -1;
+    #endif
   }
 
   void HardwareSerial::flush() {
-#ifdef LINENIR
+  #ifdef TXBUFFER
+    #ifdef LINENIR
     while (_tx_buffer_head != _tx_buffer_tail || (bit_is_set(LINENIR, LENTXOK))) {
       if (bit_is_clear(SREG, SREG_I) && bit_is_set(LINENIR, LENTXOK))
         // Interrupts are globally disabled, but the DR empty
         // interrupt should be enabled, so poll the DR empty flag to
         // prevent deadlock
         if (bit_is_set(LINSIR, LTXOK))
-#else
+    #else
     while (_tx_buffer_head != _tx_buffer_tail || (bit_is_set(*_ucsrb, UDRIE))) {
       if (bit_is_clear(SREG, SREG_I) && bit_is_set(*_ucsrb, UDRIE))
         // Interrupts are globally disabled, but the DR empty
         // interrupt should be enabled, so poll the DR empty flag to
         // prevent deadlock
         if (bit_is_set(*_ucsra, UDRE))
-#endif
+    #endif
             _tx_reg_empty_irq();
       // If interrupts are enabled, the buffer will be emptied in an interrupt driven way
     }
+  #else // without ring buffer
+    #ifdef LINSIR
+    if (bit_is_set(LINENIR, LENTXOK))
+      while (bit_is_set(LINSIR, LTXOK));
+    #else
+    while (bit_is_set(*_ucsra, UDRE));
+    #endif
+  #endif
     // buffer is empty now
   }
 
   size_t HardwareSerial::write(uint8_t c) {
+  #ifdef TXBUFFER
     byte i = (_tx_buffer_head + 1)  & (SERIAL_BUFFER_SIZE - 1);
 
     // If the output buffer is full, there's nothing for it other than to
@@ -221,11 +254,11 @@
         // register empty flag ourselves. If it is set, pretend an
         // interrupt has happened and call the handler to free up
         // space for us.
-#ifdef LINSIR
+   #ifdef LINSIR
         if (bit_is_set(LINSIR, LTXOK))
-#else
+   #else
         if(bit_is_set(*_ucsra, UDRE))
-#endif
+   #endif
           _tx_reg_empty_irq();
       }
     }
@@ -233,20 +266,35 @@
     _tx_buffer[_tx_buffer_head] = c;
     _tx_buffer_head = i;
 
-    #if (defined(UBRR0H) || defined(UBRR1H) )
-      *_ucsrb |= _udrie;
-    #else
-      if(!(LINENIR & _BV(LENTXOK))){
-        // The buffer was previously empty, so load the first byte, then enable 
-        // the TX Complete interrupt
-        unsigned char c = _tx_buffer[_tx_buffer_tail];
-        _tx_buffer_tail = (_tx_buffer_tail + 1) & (SERIAL_BUFFER_SIZE - 1);
-        LINDAT = c;
-        LINENIR = _BV(LENTXOK) | _BV(LENRXOK);
-      }
-    #endif
-
-
+   #if (defined(UBRR0H) || defined(UBRR1H) )
+    *_ucsrb |= _udrie;
+   #else
+    if(!(LINENIR & _BV(LENTXOK))){
+      // The buffer was previously empty, so load the first byte, then enable 
+      // the TX Complete interrupt
+      unsigned char c = _tx_buffer[_tx_buffer_tail];
+      _tx_buffer_tail = (_tx_buffer_tail + 1) & (SERIAL_BUFFER_SIZE - 1);
+      LINDAT = c;
+      LINENIR = _BV(LENTXOK) | _BV(LENRXOK);
+    }
+   #endif
+  #else // without ring buffer
+   #ifdef LINSIR
+    if (bit_is_clear(LINENIR, LENTXOK)) // nothing written yet
+      #ifndef TX_ONLY
+      LINENIR = _BV(LENTXOK) | _BV(LENRXOK);
+      #else
+      LINENIR = _BV(LENTXOK);
+      #endif
+    else
+      while (bit_is_clear(LINSIR, LTXOK)); // wait for output register to empty
+    LINDAT = c;
+   #else
+    while (bit_is_clear(*_ucsra, UDRE));
+    *_udr = c;
+   #endif
+  #endif
+    
     return 1;
   }
 

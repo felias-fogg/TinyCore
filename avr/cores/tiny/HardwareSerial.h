@@ -17,9 +17,9 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 */
-
 #ifndef HardwareSerial_h
 #define HardwareSerial_h
+
 
 #if ( defined(UBRRH) || defined(UBRR0H) || defined(UBRR1H) || defined(LINBRRH)) && !USE_SOFTWARE_SERIAL
 
@@ -88,17 +88,25 @@
       volatile uint8_t *_ucsrb;
       volatile uint8_t *_udr;
 
+#ifndef TX_ONLY
       volatile byte _rx_buffer_head;
       volatile byte _rx_buffer_tail;
+#endif
+#ifdef TXBUFFER
       volatile byte _tx_buffer_head;
       volatile byte _tx_buffer_tail;
-
+#endif
+      
       // Don't put any members after these buffers, since only the first
       // 32 bytes of this struct can be accessed quickly using the ldd
       // instruction.
+#ifndef TX_ONLY
       unsigned char _rx_buffer[SERIAL_BUFFER_SIZE];
+#endif
+#ifdef TXBUFFER
       unsigned char _tx_buffer[SERIAL_BUFFER_SIZE];
-    
+#endif
+      
     public:
       HardwareSerial(
       #if ( defined(UBRRH) || defined(UBRR0H) || defined(UBRR1H))
@@ -136,8 +144,12 @@
       operator bool();
 
       // called insíde interrupt handlers - not intended to be called externally
+#ifdef TXBUFFER
       void _tx_reg_empty_irq(void);
+#endif
+#ifndef TX_ONLY
       void _store_rx_char(unsigned char c);
+#endif
   };
 
   #endif

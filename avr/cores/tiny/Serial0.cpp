@@ -6,13 +6,13 @@
     #if !defined(USART0_UDRE_vect) && !defined(LIN_TC_vect)
       #error "Don't know what the Data Register Empty vector is called for the first UART"
     #endif
-    #if defined(USART0_UDRE_vect)
+    #if defined(USART0_UDRE_vect) && defined(TXBUFFER)
       ISR(USART0_UDRE_vect) {
          Serial._tx_reg_empty_irq();
       }
     #endif
   #endif
-  #if defined(USART0_RX_vect)
+  #if defined(USART0_RX_vect) && !defined(TX_ONLY)
     ISR(USART0_RX_vect) {
       unsigned char c  =  UDR0;
       Serial._store_rx_char(c);
@@ -20,14 +20,18 @@
   #elif defined(LIN_TC_vect)
     // this is for attinyX7
     ISR(LIN_TC_vect) {
+      #ifndef TX_ONLY
       if(LINSIR & _BV(LRXOK)) {
           unsigned char c  =  LINDAT;
           Serial._store_rx_char(c);
       }
+      #endif
+      #ifdef TXBUFFER
       if(LINSIR & _BV(LTXOK)) {
         //PINA |= _BV(PINA5); //debug
         Serial._tx_reg_empty_irq();
       }
+      #endif
     }
   #endif
   #if defined(UBRR0H)
