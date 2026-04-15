@@ -17,7 +17,6 @@ compiler.optimization_flags.debug=-Og -ggdb3 -fno-lto -DDEBUG
 
 build.versiondefines=-DARDUINO={runtime.ide.version} -DARDUINO_{build.board} -DARDUINO_ARCH_AVR -DTINYCORE="{version}"
 build.optiondefines=-DF_CPU={build.f_cpu} -DCLOCK_SOURCE={build.clocksource}
-# {build.millis} {build.tuneorcal} {build.wiremode} {build.bootloader} {build.usbpinset} {build.softser} {build.remap}
 
 #########################
 # AVR compile variables #
