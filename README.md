@@ -23,6 +23,7 @@ Key improvements include:
 * [EEPROM retain option](#eeprom-option)
 * [Printf support](#printf-support)
 * [Pin macros](#pin-macros)
+* [Fast IO](fast-io)
 * [Internal oscillator calibration (OSCCAL)](#internal-oscillator-calibration-osccal)
 * [Write to own flash](#write-to-own-flash)
 * [Programmers](#programmers)
@@ -162,8 +163,13 @@ digitalWrite(PIN_PB0, HIGH);
 
 // Results in the exact same compiled code
 digitalWrite(0, HIGH);
-
 ```
+
+## Fast IO
+For timing critical applications the standard `digitalRead()` and `digitalWrite()` functions may be too slow. To solve this, TinyCore also includes improved variants that compiles down to a single instruction.
+Call `pinModeFast(pin, state), `digitalReadFast(pin)`, `digitalWriteFast(pin, state)` to use these.<br/>
+**Note that the pin number and pin state has to be known at compile time!**
+
 
 ### Internal oscillator calibration (OSCCAL)
 The internal 8 MHz oscillator (or 16 MHz PLL) on these microcontrollers aren't all that accurate, and is both temperature and voltage dependent. Depending on the application, it might be necessary to perform an oscillator calibration. TinyCore provides a simple [Oscillator calibration sketch](avr/libraries/TinyCore/examples/OscillatorCalibration/OscillatorCalibration.ino) that uses the incoming UART data to calibrate its clock. Read more about this in the [device spesific documentation](#supported-microcontrollers).
