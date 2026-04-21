@@ -3,7 +3,7 @@
 
 TinyCore brings full Arduino IDE support to the classic ATtiny microcontroller family. It pairs these capable little chips with the modern and lean [Urboot](https://github.com/stefanrueger/urboot) bootloader and a clean, well-documented experience.
 
-Arduino IDE v1.8 and v2.x are both supported.
+Arduino IDE v1.8 and v2.x are both supported, as well as with [PlatformIO](#platormio)!
 
 TinyCore is a fork of [ATTinyCore 2.0.0](https://github.com/SpenceKonde/ATTinyCore), with focus on a cleaner user experience, up-to-date tooling, and improved documentation. 
 Key improvements include:
@@ -13,6 +13,7 @@ Key improvements include:
 - **Hardware debugging** via [PyAvrOCD](https://pyavrocd.io)
 - **Revised and improved documentation** for every supported chip
 - **Systematic hardware testing** - core functionality is [tested on real silicon](/avr/extras/tests/README.md)
+- **Works with PlatformIO**
 
 # Table of contents
 * [Supported microcontrollers](#supported-microcontrollers)
@@ -97,7 +98,6 @@ Note that the ATtiny48/88 and ATtiny828 require an external clock signal and are
 | 6 MHz       | Ext. crystal/osc. | 57600            |                                                   |
 | 4 MHz       | Ext. crystal/osc. | 57600            |                                                   |
 | 3.6864 MHz  | Ext. crystal/osc. | 115200           |                                                   |
-| 2 MHz       | Ext. crystal/osc. | 9600             |                                                   |
 | 1 MHz       | Ext. crystal/osc. | 9600             |                                                   |
 | 16 MHz      | Int. osc. (PLL)   | 115200           | ATtiny25/45/85, 24/44/84, 261/461/861 and 26 only |
 | 8 MHz       | Int. osc.         | 38400            | Might cause UART upload issues. See comment above |
@@ -119,7 +119,7 @@ Brown-out detection, or BOD for short lets the microcontroller sense the input v
 
 | All other parts | ATtiny26 | ATtiny43 | 
 |-----------------|----------|----------|
-| 4.3V            | 4.3V     | 4.3V     |
+| 4.3V            | 4.0V     | 4.3V     |
 | 2.7V            | 2.7V     | 2.7V     |
 | 1.8V            | Disabled | 2.3V     | 
 | Disabled        |          | 2.2V     |                               
@@ -206,7 +206,9 @@ arduino-cli core install TinyCore:avr --additional-urls https://mcudude.github.i
 ```
 
 #### PlatformIO
-[PlatformIO](http://platformio.org) is an open-source ecosystem for IoT and embedded systems. PlatformIO support is not ready just yet.
+[PlatformIO](http://platformio.org) is an open-source ecosystem for IoT and embedded systems.
+
+**See [PlatformIO.md](PlatformIO.md) for more information.*
 
 
 ## Getting started with TinyCore
