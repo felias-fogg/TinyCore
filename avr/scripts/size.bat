@@ -1,5 +1,6 @@
 @echo off
 setlocal enabledelayedexpansion
+REM Computes size of bootloader and returns JSON expression to be used by Arduino IDE 2 and arduino-cli
 
 REM Arguments - strip surrounding quotes so paths with spaces work in sub-commands
 set "sizeprog=%~1"
@@ -11,14 +12,35 @@ set "config=%~6"
 set "mcu=%~7"
 set "bootname=%~8"
 
+REM Look for specific cases
+set "urboot=%bootname:~0,8%"
+set "bootbase=%bootname%"
+call :LoopLastToken "%bootbase%"
+if "%bootbase:~0,8%"=="upgrade_" (
+    set "bootbase=%bootbase:~8%"
+   )
+set "firstpart=%bootbase:~0,8%"
+
 REM Determine bootloader size
 if "%bootname%"=="" (
     set boot=0
 ) else (
-    for /f "tokens=2" %%a in ('"%avrdude%" -c dryrun -p %mcu% -C "%config%" "%bootname%" -qq 2^>nul') do (
-        set boot=%%a
+    if "%urboot%"=="-Uurboot" (
+       for /f "tokens=2" %%a in ('"%avrdude%" -c dryrun -p %mcu% -C "%config%" "%bootname%" -qq 2^>nul') do (
+           set boot=%%a
+       )
+       if not defined boot set boot=256
+    ) else (
+       if "%firstpart%"=="original" (
+          set boot=2180
+       ) else (
+          if "%firstpart%"=="attiny45" (
+             set boot=1540
+          ) else (
+             set boot=1412
+          )
+       )
     )
-    if not defined boot set boot=256
 )
 
 REM Calculate maxflash
@@ -52,3 +74,11 @@ if %flash% GTR %maxflash% (
 
 REM Output JSON
 echo {"output": "Flash memory used: %flash% bytes out of %maxflash% (%flashpercent%%%).\nRAM used for global variables: %ram% bytes out of %maxram%.","severity": "%severity%",%errstr%"sections": [{"name": "text","size": %flash%,"max_size": %maxflash%},{"name": "data","size": %ram%,"max_size": %maxram%}]}
+
+exit/b
+
+:LoopLastToken
+   set "bootbase=%~1"
+   if not "%bootbase:*/=%"=="%~1" (
+    call :LoopLastToken "%bootbase:*/=%")
+exit/b

@@ -282,7 +282,16 @@ x5.menu.bootloader.urboot_+500.build.export_merged_output=true
 x5.menu.bootloader.urboot_+500.bootloader.str=-Uurboot:1s_pr_noled_{bootloader.pins}_{bootloader.baudrate}baud_m{bootloader.clock}
 x5.menu.bootloader.urboot_+500.bootloader.extended_fuses=0xfe
 
-x5.menu.bootloader.micronucleus=Micronucleus (16 MHz PLL)
+x5.menu.bootloader.micronucleus_original=Original Micronucleus (16 MHz PLL)
+x5.menu.bootloader.micronucleus_original.upload.tool=avrdude_micronucleus
+x5.menu.bootloader.micronucleus_original.upload.protocol=micronucleus -V -xwait=60
+x5.menu.bootloader.micronucleus_original.build.export_merged_output=true
+x5.menu.bootloader.micronucleus_original.bootloader.str=-Uflash,lfuse,efuse:w:{runtime.platform.path}/bootloaders/micronucleus/original_{build.mcu}_micronucleus_16MHz.hex:I
+x5.menu.bootloader.micronucleus_original.bootloader.extended_fuses=0xfe
+x5.menu.bootloader.micronucleus_original.build.clocksource=6
+x5.menu.bootloader.micronucleus_original.build.f_cpu=16000000L
+
+x5.menu.bootloader.micronucleus=New Micronucleus (16 MHz PLL)
 x5.menu.bootloader.micronucleus.upload.tool=avrdude_micronucleus
 x5.menu.bootloader.micronucleus.upload.protocol=micronucleus -V -xwait=60
 x5.menu.bootloader.micronucleus.build.export_merged_output=true
@@ -326,7 +335,7 @@ x4.menu.bootloader.no_bootloader.build.export_merged_output=false
 x4.menu.bootloader.no_bootloader.bootloader.str=
 x4.menu.bootloader.no_bootloader.bootloader.extended_fuses=0xff
 
-x4.menu.bootloader.urboot=Yes
+x4.menu.bootloader.urboot=Urboot (F_CPU)
 x4.menu.bootloader.urboot.upload.protocol=urclock -D -xnometadata
 x4.menu.bootloader.urboot.build.export_merged_output=true
 x4.menu.bootloader.urboot.bootloader.str=-Uurboot:1s_pr_noled_{bootloader.pins}_{bootloader.baudrate}baud_{bootloader.osc}{bootloader.clock}
@@ -580,7 +589,7 @@ x7.menu.bootloader.no_bootloader.build.export_merged_output=false
 x7.menu.bootloader.no_bootloader.bootloader.str=
 x7.menu.bootloader.no_bootloader.bootloader.extended_fuses=0xff
 
-x7.menu.bootloader.urboot_uart0=Yes
+x7.menu.bootloader.urboot_uart0=Urboot (F_CPU)
 x7.menu.bootloader.urboot_uart0.upload.protocol=urclock -D -xnometadata
 x7.menu.bootloader.urboot_uart0.build.export_merged_output=true
 x7.menu.bootloader.urboot_uart0.bootloader.str=-Uurboot:1s_pr_autobaud_noled_{bootloader.pins}
@@ -842,7 +851,7 @@ x8.menu.bootloader.no_bootloader.build.export_merged_output=false
 x8.menu.bootloader.no_bootloader.bootloader.str=
 x8.menu.bootloader.no_bootloader.bootloader.extended_fuses=0xff
 
-x8.menu.bootloader.urboot=Yes
+x8.menu.bootloader.urboot=Urboot (F_CPU)
 x8.menu.bootloader.urboot.upload.protocol=urclock -D -xnometadata
 x8.menu.bootloader.urboot.build.export_merged_output=true
 x8.menu.bootloader.urboot.bootloader.str=-Uurboot:1s_pr_noled_{bootloader.pins}_{bootloader.baudrate}baud_{bootloader.osc}{bootloader.clock}
@@ -896,7 +905,16 @@ x8.menu.bootloader.urboot_+500.build.export_merged_output=true
 x8.menu.bootloader.urboot_+500.bootloader.str=-Uurboot:1s_pr_noled_{bootloader.pins}_{bootloader.baudrate}baud_m{bootloader.clock}
 x8.menu.bootloader.urboot_+500.bootloader.extended_fuses=0xfe
 
-x8.menu.bootloader.micronucleus=Micronucleus (16 MHz ext. CLOCK)
+x5.menu.bootloader.micronucleus_original=Original Micronucleus (16 MHz ext. CLOCK)
+x5.menu.bootloader.micronucleus_original.upload.tool=avrdude_micronucleus
+x5.menu.bootloader.micronucleus_original.upload.protocol=micronucleus -V -xwait=60
+x5.menu.bootloader.micronucleus_original.build.export_merged_output=true
+x5.menu.bootloader.micronucleus_original.bootloader.str=-Uflash,lfuse,efuse:w:{runtime.platform.path}/bootloaders/micronucleus/original_{build.mcu}_micronucleus_16MHz.hex:I
+x5.menu.bootloader.micronucleus_original.bootloader.extended_fuses=0xfe
+x5.menu.bootloader.micronucleus_original.build.clocksource=6
+x5.menu.bootloader.micronucleus_original.build.f_cpu=16000000L
+
+x8.menu.bootloader.micronucleus=New Micronucleus (16 MHz ext. CLOCK)
 x8.menu.bootloader.micronucleus.upload.tool=avrdude_micronucleus
 x8.menu.bootloader.micronucleus.upload.protocol=micronucleus -V -xwait=60
 x8.menu.bootloader.micronucleus.build.export_merged_output=true
@@ -1147,7 +1165,7 @@ x61.menu.bootloader.no_bootloader.build.export_merged_output=false
 x61.menu.bootloader.no_bootloader.bootloader.str=
 x61.menu.bootloader.no_bootloader.bootloader.extended_fuses=0xff
 
-x61.menu.bootloader.urboot=Yes
+x61.menu.bootloader.urboot=Urboot (F_CPU)
 x61.menu.bootloader.urboot.upload.protocol=urclock -D -xnometadata
 x61.menu.bootloader.urboot.build.export_merged_output=true
 x61.menu.bootloader.urboot.bootloader.str=-Uurboot:1s_pr_noled_{bootloader.pins}_{bootloader.baudrate}baud_{bootloader.osc}{bootloader.clock}
@@ -1897,7 +1915,7 @@ x313.menu.clock.1MHz_external.build.f_cpu=1000000L
 43.menu.bootloader.no_bootloader.bootloader.str=
 43.menu.bootloader.no_bootloader.bootloader.extended_fuses=0xff
 
-43.menu.bootloader.urboot=Yes
+43.menu.bootloader.urboot=Urboot (F_CPU)
 43.menu.bootloader.urboot.upload.protocol=urclock -D -xnometadata
 43.menu.bootloader.urboot.build.export_merged_output=true
 43.menu.bootloader.urboot.bootloader.str=-Uurboot:1s_pr_noled_{bootloader.pins}_{bootloader.baudrate}baud_{bootloader.osc}{bootloader.clock}
