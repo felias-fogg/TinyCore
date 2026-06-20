@@ -4,41 +4,39 @@
 # 2nd arg: sketch
 # 3rd arg: max flash
 # 4th arg: max ram
-# 5th arg: avrdude path
-# 6th arg: config path
-# 7th arg: MCU
-# 8th arg: bootload name (if any)
-bootname="${8##*/}"
-bootname="${bootname%:*}"
-bootname="${bootname#upgrade_}"
-firstpart="${bootname%%_*}"
-urboot="${8%:*}"
-if [[ -z "$8" ]]; then #if bootload name is empty, use entire flash memory
+# 5th arg: MCU
+# 6th arg: bootload type
+if [[ "$6" == "nobootloader" ]]; then #if no bootloader, use entire flash memory
     boot=0
-elif [[ "$urboot" == "-Uurboot" ]]; then #if urboot, make dryrun and extract urboot size
-    if [[ $("$5" -c dryrun -p "$7" -C "$6" "$8" -qq 2>/dev/null) ]]; then
-        boot=$("$5" -c dryrun -p "$7" -C "$6" "$8" -qq | awk '{print $2}')
-    else
-        boot=256
-    fi
-elif [[ "$firstpart" == "original" ]]; then #if original micronucleus, use size of original bootloader
+elif [[ "$6" == "original_micronucleus" ]]; then
     boot=2180
-elif [[ "$firstpart" == "attiny45" ]]; then #if it is any ATtiny45, use sligthly larger size
-    boot=1540
-else #default: micronucleus new version
-    boot=1412
+elif [[ "$6" == "new_micronucleus" ]]; then
+    if [[ "$5" == "attiny45" ]]; then
+        boot=1540
+    else
+        boot=1412
+    fi
+elif [[ "$6" == "urboot" ]]; then
+    boot=256
 fi
-maxflash=$(($3-boot))
+if [[ -z "$boot" ]]; then
+    maxflash=$3
+    info="Could not determine bootloader size.\\n"
+else
+    maxflash=$(($3-boot))
+fi
 maxram=$4
 flash=$($1 -A "$2" | grep -E '^(.text|.data)\s+([0-9]+).*' | awk '{s+=$2}END{print s}')
 ram=$($1 -A "$2" | grep -E '^(.data|.bss|.noinit)\s+([0-9]+).*' | awk '{s+=$2}END{print s}')
 flashpercent=$((flash*100/maxflash))
-printf  '{  "output": "Flash memory used: %d bytes out of %d (%d%%).\\n' "$flash" "$maxflash" "$flashpercent"
+printf  '{  "output": "%sFlash memory used: %d bytes out of %d (%d%%).\\n' "$info" "$flash" "$maxflash" "$flashpercent"
 printf  'RAM used for global variables: %d bytes out of %d.",' "$ram" "$maxram" 
 if [[ $ram -gt $maxram ]]; then
     printf '"severity": "error", "error": "Not enough RAM", '
 elif [[ $flash -gt $maxflash ]]; then
     printf '"severity": "error", "error": "Sketch is too big", '
+elif [[ -z "$boot" ]]; then
+    printf '"severity": "warning", "warning": "Could not determine bootloader size.", '
 else
     printf '"severity": "info", '
 fi

@@ -7,45 +7,32 @@ set "sizeprog=%~1"
 set "sketch=%~2"
 set "maxflash=%~3"
 set "maxram=%~4"
-set "avrdude=%~5"
-set "config=%~6"
-set "mcu=%~7"
-set "bootname=%~8"
-
-REM Look for specific cases
-set "urboot=%bootname:~0,8%"
-set "bootbase=%bootname%"
-call :LoopLastToken "%bootbase%"
-if "%bootbase:~0,8%"=="upgrade_" (
-    set "bootbase=%bootbase:~8%"
-   )
-set "firstpart=%bootbase:~0,8%"
+set "mcu=%~5"
+set "boottype=%~6"
 
 REM Determine bootloader size
-if "%bootname%"=="" (
+if "%boottype%"=="nobootloader" (
     set boot=0
-) else (
-    if "%urboot%"=="-Uurboot" (
-       for /f "tokens=2" %%a in ('"%avrdude%" -c dryrun -p %mcu% -C "%config%" "%bootname%" -qq 2^>nul') do (
-           set boot=%%a
-       )
-       if not defined boot set boot=256
+) 
+if "%boottype%"=="original_micronucleus" (
+    set boot=2180
+)
+if "%boottype%"=="new_micronucleus" (
+    if "%mcu%"=="attiny45" (
+        set boot=1540
     ) else (
-       if "%firstpart%"=="original" (
-          set boot=2180
-       ) else (
-          if "%firstpart%"=="attiny45" (
-             set boot=1540
-          ) else (
-             set boot=1412
-          )
-       )
+        set boot=1412
     )
 )
+if "%boottype%"=="urboot" (
+   set boot=256
+)
+
 
 REM Calculate maxflash
-set /a maxflash=%maxflash% - %boot%
-
+if defined boot (
+   set /a maxflash=%maxflash% - %boot%
+)
 
 REM Calculate flash and RAM from avr-size output
 set flash=0
@@ -63,6 +50,11 @@ set /a flashpercent=flash*100/maxflash
 
 REM Determine severity
 set severity=info
+if not defined boot (
+   set severity=warning
+   set errstr="warning": "Could not determine bootloader size",
+   set info=Could not determine bootloader size.\n
+   )
 if %ram% GTR %maxram% (
    set severity=error
    set errstr="error": "Not enough RAM",
@@ -73,7 +65,7 @@ if %flash% GTR %maxflash% (
    )
 
 REM Output JSON
-echo {"output": "Flash memory used: %flash% bytes out of %maxflash% (%flashpercent%%%).\nRAM used for global variables: %ram% bytes out of %maxram%.","severity": "%severity%",%errstr%"sections": [{"name": "text","size": %flash%,"max_size": %maxflash%},{"name": "data","size": %ram%,"max_size": %maxram%}]}
+echo {"output": "%info%Flash memory used: %flash% bytes out of %maxflash% (%flashpercent%%%).\nRAM used for global variables: %ram% bytes out of %maxram%.","severity": "%severity%",%errstr%"sections": [{"name": "text","size": %flash%,"max_size": %maxflash%},{"name": "data","size": %ram%,"max_size": %maxram%}]}
 
 exit/b
 

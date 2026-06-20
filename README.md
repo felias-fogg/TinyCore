@@ -3,7 +3,7 @@
 
 TinyCore brings full Arduino IDE support to the classic ATtiny microcontroller family. It pairs these capable little chips with the modern and lean [Urboot](https://github.com/stefanrueger/urboot) bootloader and a clean, well-documented experience.
 
-Arduino IDE v1.8 and v2.x are both supported, as well as with [PlatformIO](#platormio)!
+Arduino IDE v1.8 and v2.x are both supported, as well as with [PlatformIO](#platormio)! Note, however, that with Arduino IDE v1.8, you do not get any debugging functionality. Additionally, the flash size check before starting the upload is too optimistic, maybe leading to strange error messages by the bootloader.
 
 TinyCore is a fork of [ATTinyCore 2.0.0](https://github.com/SpenceKonde/ATTinyCore), with focus on a cleaner user experience, up-to-date tooling, and improved documentation. 
 Key improvements include:
@@ -194,17 +194,17 @@ For more information on how it works and how you can use this in your own applic
 
 ## Pragma directive
 TinyCore introduces two custom `#pragma` directives that allow you to specify build flags directly from the sketch.
- 
+
 ```c
 #pragma arduino release_flags ...
 #pragma arduino debug_flags ...
 ```
- 
+
 These directives append flags to the build command line depending on the active build mode.  
 For instance, `#pragma arduino release_flags -DTX_ONLY` will enable UART TX only without having to specify this in the Tools menu.
-  
+
 Read more about these `#pragma` directives and how to use them in [pragma.md](/pragma.md).
- 
+
 ## Programmers
 Select your microcontroller in the boards menu, then select the clock frequency. You'll have to hit "Burn bootloader" in order to set the correct fuses and upload the correct bootloader. <br/>
 Make sure you connect an ISP programmer, and select the correct one in the "Programmers" menu.
