@@ -44,7 +44,7 @@ Key improvements include:
 
 
 ## Supported microcontrollers
-Each chip family has different pinouts, peripherals, and capabilities. Some differences are obvious, while others are subtle and can affect how features behave. Please read the provided for the specific chip family you are using by clocking the links below. Here you'll find pin mappings, specs, and other important core-related details.
+Each chip family has different pinouts, peripherals, and capabilities. Some differences are obvious, while others are subtle and can affect how features behave. Please read the provided information for the specific chip family you are using by clicking the links below. Here you'll find pin mappings, specs, and other important core-related details.
 
 * [ATtiny25/45/85](avr/extras/ATtiny_x5.md)
 * [ATtiny24/44/84](avr/extras/ATtiny_x4.md)
@@ -121,7 +121,7 @@ The internal oscillator on the most ATtinys is usually slower than it should be 
 Note that the 128 kHz internal oscillator option is not recommended for use with a bootloader since the oscillator is too inaccurate for practical use with an asynchronous protocol like UART.
 
 ### Micronucleus
-[Micronucleus](https://github.com/micronucleus/micronucleus) is a bootloader that emulates a USB interface and lets you upload sketches using a native USB interface. This bootloader is quite a bit larger than Urboot (~1400 bytes compared to 256 bytes), but it requires no external programmer or USB to serial chip for programming. Popular boards that uses the Micronucleus bootloader is the ATtiny85 based Digispark and the ATtiny88 based MH-Tiny boards. All of these can be bought cheaply from sites like Aliexpress.
+[Micronucleus](https://github.com/micronucleus/micronucleus) is a bootloader that emulates a USB interface and lets you upload sketches using a native USB interface. This bootloader is quite a bit larger than Urboot (~1400 bytes compared to 256 bytes), but it requires no external programmer or USB to serial chip for programming. Popular boards that use the Micronucleus bootloader are the ATtiny85-based Digispark and the ATtiny88-based MH-Tiny boards. All of these can be bought cheaply from sites like Aliexpress.
 
 Read more about how to use, flash and upgrade the Micronucleus bootloader under the bootlaoder section in the device spesific documentation for [ATtiny25/45/85](/avr/extras/ATtiny_x5.md) and [ATtiny48/88](/avr/extras/ATtiny_x8.md).
 

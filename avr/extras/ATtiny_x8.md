@@ -45,7 +45,7 @@ The ATtiny48/88 is designed as a low-cost alternative compatible with the popula
 | LED_BUILTIN                                | PIN_PB5               | PIN_PD0               |
 
 ### Urboot bootloader
-This core uses the [Urboot bootloader](https://github.com/stefanrueger/urboot/) for the ATtiny48/88, a modern replacement that addresses the fundamental shortcomings of Optiboot on these parts. The bootloader is configured to occupy only 256 bytes, less than half of what Optiboot required, leaving 3840 or 7936 bytes available for user code on the ATtiny48 and 88 respectively. Urboot can be reconfigured to include additional features at the cost of increased flash usage, though the 256-byte variant used here covers the needs of most users. These chips does not have a hardware serial port, so Urboot is configured to use software-based UART.
+This core uses the [Urboot bootloader](https://github.com/stefanrueger/urboot/) for the ATtiny48/88, a modern replacement that addresses the fundamental shortcomings of Optiboot on these parts. The bootloader is configured to occupy only 256 bytes, less than half of what Optiboot required, leaving 3840 or 7936 bytes available for user code on the ATtiny48 and 88, respectively. Urboot can be reconfigured to include additional features at the cost of increased flash usage, though the 256-byte variant used here covers the needs of most users. These chips do not have a hardware serial port, so Urboot is configured to use a software-based UART.
 
 A critical improvement over Optiboot is that Urboot actively protects both itself and the reset vector from being overwritten during flash operations, preventing the bootloader from bricking itself. The bootloader remains intact regardless of what is uploaded, making it a reliable choice.
 
@@ -54,10 +54,10 @@ The default serial upload pins for these chips are PD6 (TX) and PD7 (RX). The WD
 
 The AVR internal oscillator is neither highly accurate nor necessarily tightly calibrated from the factory. Since a stable system clock is essential for asynchronous protocols such as UART, the bootloader can be configured to apply an oscillator correction factor. This is exposed as a Tools menu option, with adjustable compensation ranging from -5.00% to +5.00%.
 
-### Micronucleus
+### Micronucleus bootloader
 [Micronucleus](https://github.com/micronucleus/micronucleus) is a bootloader that emulates a USB interface and lets you upload sketches using a native USB interface without the need for an external programmer or USB-to-serial adapter. TinyCore implements the V2.6 of this bootloader.
 
-Rather than relying on a hardware USB controller, Micronucleus uses **V-USB**, a software-only implementation of the USB 1.1 low-speed protocol using the ATtiny's I/O pins. On the ATtiny48/88, two pins are dedicated to the USB data lines (D+ and D-), typically with small series resistors and zener diodes for voltage clamping to meet USB signal level requirements.
+Rather than relying on a hardware USB controller, Micronucleus uses **V-USB**, a software-only implementation of the USB 1.1 low-speed protocol using the ATtiny's I/O pins. On the ATtiny48/88, two pins are dedicated to the USB data lines (D+ and D-), typically with small series resistors and Zener diodes for voltage clamping to meet USB signal level requirements.
 
 When the microcontroller powers up or is reset, Micronucleus briefly enumerates as a USB device and waits a few seconds for an upload command from the host. If no upload is initiated, it jumps to the user application. If an upload is detected, it receives the new sketch, writes it to flash, and then starts it. The newest version of Micronucleus occupies about **1400 bytes** of flash, compared to 256 bytes for Urboot. Note that the microcontroller will be running from a 16 MHz *clock* when using the Micronucleus bootloader. Since the ATtiny48/88 doesn't have a built-in crystal driver like other ATtinys have, a dedicated clock is *required* for the bootloader to work.
 
@@ -87,7 +87,7 @@ To address this, TinyCore provides an [Oscillator calibration sketch](../librari
     OSCCAL = cal;
 ```
 
-Another approach is to use the [avrCalibrate](https://github.com/felias-fogg/avrCalibrate) library, which uses a host microcontroller along with the target to perform the calibraion. avrCalibrate can also calibrate internal voltage references.
+Another approach is to use the [avrCalibrate](https://github.com/felias-fogg/avrCalibrate) library, which uses a host microcontroller along with the target to perform the calibration. avrCalibrate can also calibrate internal voltage references.
 
 ### External Clock
 The ATtiny48/88 does not support an external crystal oscillator, but does accept an external clock signal on PB6 (CLKI). External clock generators typically come in the same rectangular metal package as crystals, but can be distinguished by their pin count: clock generators use all four pins (Vcc, GND, CLKOUT, and Enable), whereas crystals use only two, or four with two unconnected. The Enable pin is generally active-high with an internal weak pull-up.
