@@ -2,9 +2,9 @@
 
 The ATtiny25/45/85 family is arguably the most popular classic tinyAVR series, widely used in small and space-constrained designs. Available in an 8-pin DIP, SOIC-8 and QFN-20 packages, these parts pack a USI peripheral, a differential ADC, an on-chip PLL, and a high-speed Timer1 into a minimal footprint. The three family members differ only in flash and RAM size: 2/4/8 KiB of flash and 128/256/512 bytes of RAM respectively. They do not feature a hardware UART; serial communication relies on the built-in software serial implementation.
 
-| Pinout diagram                                  | Digispark                                                  | Minimal setup schematic                                  |
-|-------------------------------------------------|------------------------------------------------------------|----------------------------------------------------------|
-|<img src="avr/extras/Pinout_x5.png" width="300"> | <img src="avr/extras/Pinout_x5_Digispark.png" width="360"> |<img src="avr/extras/ATtiny25_45_85_minimal_setup.png" width="240"> |
+| Pinout diagram                       | Digispark                                       | Minimal setup schematic                                 |
+|--------------------------------------|-------------------------------------------------|---------------------------------------------------------|
+|<img src="Pinout_x5.png" width="300"> | <img src="Pinout_x5_Digispark.png" width="360"> |<img src="ATtiny25_45_85_minimal_setup.png" width="240"> |
 
 ## Table of contents
 - [Specifications](#specifications)
@@ -73,7 +73,7 @@ The most well-known board using Micronucleus on the ATtiny85 is the **Digispark*
 To upload sketches to a board that already has the Micronucleus bootloader installed (for instance the Digispark), select *Tools > Bootloader > Micronucleus (16 MHz PLL)* in the Arduino IDE. Unplug the board from your computer, click *Upload*, and connect the board to your computer when Avrdude tells you to. The sketch will start automatically when done uploading.
 
 #### Upgrading the bootloader
-The bootloader itself can be upgraded over USB using the Micronucleus tool with a special "upgrade" firmware, as long as the chip is already running the Micronucleus bootloader. Select *Tools > Bootloader > Upgrade to newest Micronucleus (16 MHz PLL)*. Unplug the board from the computer and click *Burn Bootloader*. Connect the board to your computer when Avrdude tells you to. When the upload process is finished, give the microcontroller a little time to reprogram itself. The board should now be ready ready!
+The bootloader itself can be upgraded over USB using the Micronucleus tool with a special "upgrade" firmware, as long as the chip is already running the Micronucleus bootloader. Select *Tools > Bootloader > Upgrade to newest Micronucleus (16 MHz PLL)*. In order to get Arduino IDE to play along, select *Tools > Programmers* and select any programmer. Unplug the board from the computer and click *Burn Bootloader*. Connect the board to your computer when Avrdude tells you to. When the upload process is finished, give the microcontroller a little time to reprogram itself. The board should now be ready ready!
 
 #### Flashing the bootloader using a programmer
 A chip without any bootloader will require an ISP programmer for the initial flash. Select *Tools > Bootloader > Micronucleus (16 MHz PLL)*, and select your preferred programmer under *Tools > Programmer*. Connect the ISP programmer to the target microcontroller and click *Burn Bootloader*.
