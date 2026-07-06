@@ -60,23 +60,26 @@ The default serial upload pins for these chips are PB0 (TX) and PB1 (RX). The WD
 
 The AVR internal oscillator is neither highly accurate nor necessarily tightly calibrated from the factory. Since a stable system clock is essential for asynchronous protocols such as UART, the bootloader can be configured to apply an oscillator correction factor. This is exposed as a Tools menu option, with adjustable compensation ranging from -5.00% to +5.00%.
 
-### Micronucleus
+### Micronucleus bootloader
 [Micronucleus](https://github.com/micronucleus/micronucleus) is a bootloader that emulates a USB interface and lets you upload sketches using a native USB interface without the need for an external programmer or USB-to-serial adapter. TinyCore implements the V2.6 of this bootloader.
 
 Rather than relying on a hardware USB controller, Micronucleus uses **V-USB**, a software-only implementation of the USB 1.1 low-speed protocol using the ATtiny's I/O pins. On the ATtiny25/45/85, two pins are dedicated to the USB data lines (D+ and D-), typically with small series resistors and zener diodes for voltage clamping to meet USB signal level requirements.
 
-When the microcontroller powers up or is reset, Micronucleus briefly enumerates as a USB device and waits a few seconds for an upload command from the host. If no upload is initiated, it jumps to the user application. If an upload is detected, it receives the new sketch, writes it to flash, and then starts it. Micronucleus occupies about **1400 bytes** of flash, compared to 256 bytes for Urboot. Note that the microcontroller will be running from its 16 MHz internal PLL when using the Micronucleus bootloader.
+When the microcontroller powers up or is reset, Micronucleus briefly enumerates as a USB device and waits a few seconds for an upload command from the host. If no upload is initiated, it jumps to the user application. If an upload is detected, it receives the new sketch, writes it to flash, and then starts it. The newest version of Micronucleus occupies about **1400 bytes** of flash, compared to 256 bytes for Urboot. Note that the microcontroller will be running from its 16 MHz internal PLL when using the Micronucleus bootloader.
 
 The most well-known board using Micronucleus on the ATtiny85 is the **Digispark**, a tiny development board with a built-in USB connector (or USB pins broken out), a voltage regulator, and a few GPIO pins. It was originally designed by Digistump and has since been widely cloned and sold cheaply on sites like AliExpress. The **ATtiny88**-based **MH-Tiny** board follows the same concept for a slightly larger chip.
 
 #### Uploading using the Micronucleus bootloader
-To upload sketches to a board that already has the Micronucleus bootloader installed (for instance the Digispark), select *Tools > Bootloader > Micronucleus (16 MHz PLL)* in the Arduino IDE. Unplug the board from your computer, click *Upload*, and connect the board to your computer when Avrdude tells you to. The sketch will start automatically when done uploading.
+To upload sketches to a board that already has the Micronucleus bootloader installed (for instance, the Digispark), select *Tools > Bootloader > Original Micronucleus (16 MHz PLL)* in the Arduino IDE. Unplug the board from your computer, click *Upload*, and connect the board to your computer when Avrdude tells you to. The sketch will start automatically when the upload is done.
 
 #### Upgrading the bootloader
-The bootloader itself can be upgraded over USB using the Micronucleus tool with a special "upgrade" firmware, as long as the chip is already running the Micronucleus bootloader. Select *Tools > Bootloader > Upgrade to newest Micronucleus (16 MHz PLL)*. In order to get Arduino IDE to play along, select *Tools > Programmers* and select any programmer. Unplug the board from the computer and click *Burn Bootloader*. Connect the board to your computer when Avrdude tells you to. When the upload process is finished, give the microcontroller a little time to reprogram itself. The board should now be ready ready!
+
+Because the most recent version of Micronucleus is much more memory efficient than the older versions, it is advisable to upgrade the bootloader. 
+
+The bootloader itself can be upgraded over USB using the Micronucleus tool with a special "upgrade" firmware, as long as the chip is already running the Micronucleus bootloader. Select *Tools > Bootloader > Upgrade to newest Micronucleus (16 MHz PLL)*. In order to get Arduino IDE to play along, select *Tools > Programmers* and select any programmer. Unplug the board from the computer and click *Burn Bootloader*. Connect the board to your computer when Avrdude tells you to. When the upload process is finished, give the microcontroller a little time to reprogram itself. The board should now be ready!
 
 #### Flashing the bootloader using a programmer
-A chip without any bootloader will require an ISP programmer for the initial flash. Select *Tools > Bootloader > Micronucleus (16 MHz PLL)*, and select your preferred programmer under *Tools > Programmer*. Connect the ISP programmer to the target microcontroller and click *Burn Bootloader*.
+A chip without any bootloader will require an ISP programmer for the initial flash. Select *Tools > Bootloader > New Micronucleus (16 MHz PLL)*, and select your preferred programmer under *Tools > Programmer*. Connect the ISP programmer to the target microcontroller and click *Burn Bootloader*.
 
 ### LED_BUILTIN is on PB2
 This is different than on ATtinyCore, which uses PB1.

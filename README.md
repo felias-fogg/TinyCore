@@ -3,7 +3,7 @@
 
 TinyCore brings full Arduino IDE support to the classic ATtiny microcontroller family. It pairs these capable little chips with the modern and lean [Urboot](https://github.com/stefanrueger/urboot) bootloader and a clean, well-documented experience.
 
-Arduino IDE v1.8 and v2.x are both supported, as well as with [PlatformIO](#platormio)!
+Arduino IDE v1.8 and v2.x are both supported, as well as with [PlatformIO](#platormio)! Note, however, that with Arduino IDE v1.8, you do not get any debugging functionality. Additionally, the flash size check before starting the upload is too optimistic, maybe leading to strange error messages by the bootloader.
 
 TinyCore is a fork of [ATTinyCore 2.0.0](https://github.com/SpenceKonde/ATTinyCore), with focus on a cleaner user experience, up-to-date tooling, and improved documentation. 
 Key improvements include:
