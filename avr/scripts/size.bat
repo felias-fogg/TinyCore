@@ -18,11 +18,7 @@ if "%boottype%"=="original_micronucleus" (
     set boot=2180
 )
 if "%boottype%"=="new_micronucleus" (
-    if "%mcu%"=="attiny45" (
-        set boot=1540
-    ) else (
-        set boot=1412
-    )
+   set boot=1412
 )
 if "%boottype%"=="urboot" (
    set boot=256

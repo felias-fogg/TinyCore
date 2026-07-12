@@ -11,11 +11,7 @@ if [[ "$6" == "nobootloader" ]]; then #if no bootloader, use entire flash memory
 elif [[ "$6" == "original_micronucleus" ]]; then
     boot=2180
 elif [[ "$6" == "new_micronucleus" ]]; then
-    if [[ "$5" == "attiny45" ]]; then
-        boot=1540
-    else
-        boot=1412
-    fi
+    boot=1412
 elif [[ "$6" == "urboot" ]]; then
     boot=256
 fi
