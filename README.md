@@ -10,7 +10,7 @@ Key improvements include:
 
 - **Cleaner Tools menu** - fewer options, as core functionality is automatically optimized away if not used
 - **Urboot bootloader** - only 256 bytes, self-protecting, and far more reliable than Optiboot
-- **Hardware debugging** via [PyAvrOCD](https://pyavrocd.io)
+- **Hardware debugging** via [PyAvrOCD](https://pyavrocd.io), with the tools from the [AvrDebugger](#how-to-install) package
 - **Revised and improved documentation** for every supported chip
 - **Systematic hardware testing** - core functionality is [tested on real silicon](/avr/extras/tests/README.md)
 - **Support for the ATtiny85 based [Digispark](/avr/extras/ATtiny_x5.md) and the ATtiny88 based [MH-Tiny](/avr/extras/ATtiny_x8.md) board**
@@ -228,18 +228,25 @@ Make sure you connect an ISP programmer, and select the correct one in the "Prog
 * Scroll down until you see the **TinyCore** entry and click on it.
 * Click **Install**.
 * After installation is complete close the **Boards Manager** window.
+* In order to debug, you also need the **AvrDebugger** package, which contains the debug tools shared by all debug-configured cores. Add its URL to **Additional Boards Manager URLs** as well (one URL per line): `https://felias-fogg.github.io/AvrDebugger/package_felias-fogg_AvrDebugger_index.json`, and install **AvrDebugger** in the Boards Manager in the same way. If you click **Debug** without it, the IDE says so in its gdb-server terminal.
 
 ### Manual Installation
 Click on the "Download ZIP" button in the upper right corner. Extract the ZIP file, and move the extracted folder to the location "**~/Documents/Arduino/hardware**". Create the "hardware" folder if it doesn't exist.
 Open Arduino IDE, and a new category in the boards menu called "TinyCore" will show up.
 
-Note that a manual installation will not download binary tools such as the most recent avrdude program and the debugging tool.
+Note that a manual installation will not download binary tools such as the most recent avrdude program. The debug tools come with the AvrDebugger package, which you can install with the Boards Manager as described above.
 
 ### Arduino CLI Installation
 Run the following command in a terminal:
 
 ```text
 arduino-cli core install TinyCore:avr --additional-urls https://mcudude.github.io/TinyCore/package_MCUdude_TinyCore_index.json
+```
+
+and, for debugging,
+
+```text
+arduino-cli core install AvrDebugger:avr --additional-urls https://felias-fogg.github.io/AvrDebugger/package_felias-fogg_AvrDebugger_index.json
 ```
 
 ### PlatformIO

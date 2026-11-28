@@ -2,12 +2,14 @@
 #
 # Push a tag and this does the rest:
 #
-#     git tag v0.9.1-rc1 && git push origin v0.9.1-rc1   # a candidate to try out
-#     git tag v0.9.1     && git push origin v0.9.1       # the real thing
+#     ./avr/extras/release.sh 0.9.0-rc1    # a candidate to try out
+#     ./avr/extras/release.sh 0.9.0        # the real thing
+#
+# release.sh checks what can be checked beforehand, then tags and pushes.
 #
 # A tag carrying -rc is published as a pre-release and goes into an index of its
 # own, so it never reaches an ordinary board manager. Nothing is published unless
-# the checks and every compilation have passed.
+# the checks, every compilation and the avrdude check have passed.
 #
 # The checks are the workflows this repository already has, called rather than
 # copied: each of them gained a 'workflow_call' trigger and is otherwise
@@ -61,9 +63,47 @@ jobs:
     with:
       tag: ${{ github.ref_name }}
 
+  avrdude:
+    name: avrdude can upload with every programmer
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check out the branch that carries the index
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: pages
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Find the avrdude this release will name in the index
+        working-directory: pages
+        run: |
+          # The publish job adds the newest avrdude to the index and makes the
+          # platform depend on it. Doing the same here, in a copy that is thrown
+          # away, gives exactly the avrdude a user will get.
+          bash Add_avrdude_release.sh
+          VERSION=$(jq -r '.packages[].tools[] | select(.name == "avrdude") | .version' \
+                    package_MCUdude_TinyCore_index.json | sort -V | tail -1)
+          echo "avrdude ${VERSION}"
+          test -n "$VERSION"
+          echo "AVRDUDE_VERSION=$VERSION" >> "$GITHUB_ENV"
+
+      - name: Try it with every programmer
+        run: |
+          # No hardware involved: every programmer is called with -n and a port
+          # that matches nothing; see the script.
+          python avr/extras/check_avrdude.py --root avr \
+                 --index pages/package_MCUdude_TinyCore_index.json \
+                 --packager TinyCore --version "$AVRDUDE_VERSION" \
+                 --host x86_64-linux-gnu
+
   publish:
     name: Publish
-    needs: [version, lint, keywords, library-properties, library-structure, core]
+    needs: [version, lint, keywords, library-properties, library-structure, core, avrdude]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -118,16 +158,6 @@ jobs:
           # yet, and says so and stops when it is. Has to run before the core
           # entry, which depends on the newest avrdude the index knows.
           bash Add_avrdude_release.sh
-
-      - name: Offer the current debugging tools
-        working-directory: pages
-        run: |
-          # Has to run, not just may: Boards_manager_release.sh takes the
-          # PyAvrOCD version from the same API this script does, not from the
-          # index, so leaving this out makes the next step abort as soon as a
-          # newer PyAvrOCD exists. And a new version of the debugging tools is
-          # the most common reason for a release of the core in the first place.
-          bash Add_avrocd-tools_release.sh
 
       - name: Add this version to the board manager index
         working-directory: pages
