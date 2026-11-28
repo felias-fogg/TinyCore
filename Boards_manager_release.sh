@@ -9,7 +9,6 @@
 ##########################################################
 
 # Change these to match your repo
-PAOOWNER=felias-fogg # Github owner of PyAvrOCD  
 AUTHOR=MCUdude       # Github user name
 REALAUTHOR=MCUdude   # real author
 REPOSITORY=TinyCore  # Github repo name
@@ -32,17 +31,9 @@ if [ -z "$AVRDUDE_VERSION" ]; then
 fi
 echo "Platform will depend on avrdude ${AVRDUDE_VERSION}"
 
-# Get the version number of most recent PyAvrOCD version
-PAOVERSION=$(curl -s https://api.github.com/repos/$PAOOWNER/PyAvrOCD/releases/latest | grep "tag_name" |  awk -F\" '{print $4}')
-AVROCDVERSION=${PAOVERSION#"v"}
-
-# Without this the script runs on with an empty version: the check below then
-# matches any avrocd-tools entry at all, and jq swallows the next --arg as the
-# value of an empty one, so every argument after it shifts by one.
-if [ -z "$AVROCDVERSION" ]; then
-    echo "Could not find out which PyAvrOCD version is the most recent one"
-    exit 1
-fi
+# Since 0.9.0 the debug tools are not a dependency any more: they come from the
+# AvrDebugger package, which the user installs separately and the platform
+# finds as runtime.tools.avr-debugger.path.
 
 # A tag may be given as the first argument. Without one we take the latest
 # release, as before; with one we take exactly that tag, which is what a
@@ -69,14 +60,6 @@ echo "Packaging ${DOWNLOADED_FILE}"
 # refused because one of its own pre-releases is in the index.
 if grep -q "${REPOSITORY}-${DOWNLOADED_FILE#"v"}.tar.bz2" $INDEX; then
     echo "Most recent board version is already in the index file. Nothing to do."
-    exit 1
-fi
-
-# Check whether already part of the index
-if grep -q "avrocd-tools-"${AVROCDVERSION} $INDEX; then
-    echo "Current PyAvrOCD version is in index. Continue ..."
-else
-    echo "Current PyAvrOCD version is not in index. Add it first."
     exit 1
 fi
 
@@ -118,7 +101,6 @@ cp "$INDEX" "$INDEX.tmp"
 
 # Add new boards release entry
 jq -r                                    \
---arg avrocdversion $AVROCDVERSION     \
 --arg repository  $REPOSITORY            \
 --arg version     ${DOWNLOADED_FILE#"v"} \
 --arg url         $URL                   \
@@ -154,12 +136,7 @@ jq -r                                    \
       "packager": "arduino",
       "name": "arduinoOTA",
       "version": "1.3.0"
-    },
-    {
-      "packager": "TinyCore",
-      "name": "avrocd-tools",
-      "version": $avrocdversion
-    }   
+    }
   ]
 }' "$INDEX.tmp" > "$INDEX"
 

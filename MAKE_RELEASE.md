@@ -5,15 +5,19 @@ manager; the index is.
 
 ## A release
 
-Three scripts, run here in this order. Each only adds what the index is missing
-and says so when there is nothing to do, so calling one twice does no harm.
+Normally the release workflow of the core does all of this: `./avr/extras/release.sh 0.9.0`
+on `main` checks, tags and pushes, and the tag starts the workflow, which runs
+the scripts below and commits the index here. By hand it is two scripts, run
+here in this order. Each only adds what the index is missing and says so when
+there is nothing to do, so calling one twice does no harm.
 
     bash Add_avrdude_release.sh        # the newest avrdude, if the index lacks it
-    bash Add_avrocd-tools_release.sh   # the newest PyAvrOCD tool package, likewise
     bash Boards_manager_release.sh     # the core itself
 
-The platform entry the last script writes depends on the newest avrdude and the
-newest avrocd-tools the index knows, which is why the other two run first.
+The platform entry the last script writes depends on the newest avrdude the
+index knows, which is why the other one runs first. The debug tools are not a
+dependency: since 0.9.0 they come from the separately installed AvrDebugger
+package.
 Without an argument it packs the newest release of the repository. Commit the
 changed index together with the archive the script leaves behind.
 
@@ -30,11 +34,11 @@ to be named:
     bash Boards_manager_release.sh v0.9.0-rc1
 
 A candidate has no business in the index that everybody's board manager reads.
-Set `INDEX_FILE`, and all three scripts write a second index instead:
+Set `INDEX_FILE`, and both scripts write a second index instead:
 
     export INDEX_FILE=package_MCUdude_TinyCore_rc_index.json
     cp package_MCUdude_TinyCore_index.json "$INDEX_FILE"   # once, to create it
-    bash Add_avrocd-tools_release.sh
+    bash Add_avrdude_release.sh
     bash Boards_manager_release.sh v0.9.0-rc1
 
 Being a copy, that index offers the released versions as well, so a tester can
